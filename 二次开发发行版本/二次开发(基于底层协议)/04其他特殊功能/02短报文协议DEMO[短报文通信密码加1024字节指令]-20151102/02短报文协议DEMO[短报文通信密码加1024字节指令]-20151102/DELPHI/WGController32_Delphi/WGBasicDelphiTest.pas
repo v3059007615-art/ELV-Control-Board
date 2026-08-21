@@ -1,0 +1,1097 @@
+{/**
+* $Id: WWGBasicDelphiTest 2015-04-29 23:09:17 karl CSN 陈绍宁 $
+*
+* 门禁控制器 短报文协议 测试案例
+* V1.3 版本  2013-11-09 10:11:19
+*            基本功能:  查询控制器状态 
+*                       读取日期时间
+*                       设置日期时间
+*                       获取指定索引号的记录
+*                       设置已读取过的记录索引号
+*                       获取已读取过的记录索引号
+*                       远程开门
+*                       权限添加或修改
+*                       权限删除(单个删除)
+*                       权限清空(全部清掉)
+*                       权限总数读取
+*                       权限查询
+*                       设置门控制参数(在线/延时)
+*                       读取门控制参数(在线/延时)
+
+*                       设置接收服务器的IP和端口
+*                       读取接收服务器的IP和端口
+*                       
+*
+*                       接收服务器的实现 (在61005端口接收数据) -- 此项功能 一定要注意防火墙设置 必须是允许接收数据的.
+* V2.5 版本  2015-04-29 20:41:30 采用 V6.56驱动版本 型号由$19改为$17
+*/
+}
+
+unit WGBasicDelphiTest;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, IdUDPServer, IdBaseComponent, IdComponent, IdUDPBase,
+  IdUDPClient,  WGPacketShort,
+  IdSocketHandle;
+
+type
+  TByteDynArray         = array of Byte;
+  TForm1 = class(TForm)
+    IdUDPClient1: TIdUDPClient;
+    Button1: TButton;
+    IdUDPServer1: TIdUDPServer;
+    Memo1: TMemo;
+    Label1: TLabel;
+    Label2: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Button2: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure  testBasicFunction( ip: PChar; const controllerSN: Cardinal);
+    procedure  testWatchingServer( ip: PChar; const controllerSN: Cardinal;   watchServerIP: PChar; const watchServerPort: Cardinal);
+       //接收服务器设置
+    procedure  WatchingServerRuning(  watchServerIP: PChar; const watchServerPort: Cardinal);
+    procedure  log(info:PChar);
+    procedure  logStr(const info:String);
+    function   pktrun (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte):integer;
+    function  pktrunWithPassword (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte; var password: array of Byte):integer;
+    function   pktrun1024 (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte):integer;
+    function  pktrunWithPassword1024 (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte; var password: array of Byte):integer;
+   procedure UDPServerUDPRead(Sender: TObject; AData: TStream; ABinding: TIdSocketHandle); //接收服务器 处理数据
+    procedure displayRecordInformation(var recvBuff: array of Byte);
+    procedure Button2Click(Sender: TObject);    //2015-06-11 19:39:36
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  sendSequenceId: Cardinal;      //流水号
+  watchingRecordIndex : Cardinal;   //服务器监控时处理的记录索引号
+
+Const
+
+        RecordDetails: array[0..179] of string =
+        (
+//记录原因 (类型中 SwipePass 表示通过; SwipeNOPass表示禁止通过; ValidEvent 有效事件(如按钮 门磁 超级密码开门); Warn 报警事件)
+//代码  类型   英文描述  中文描述
+'1','SwipePass','Swipe','刷卡开门',
+'2','SwipePass','Swipe Close','刷卡关',
+'3','SwipePass','Swipe Open','刷卡开',
+'4','SwipePass','Swipe Limited Times','刷卡开门(带限次)',
+'5','SwipeNOPass','Denied Access: PC Control','刷卡禁止通过: 电脑控制',
+'6','SwipeNOPass','Denied Access: No PRIVILEGE','刷卡禁止通过: 没有权限',
+'7','SwipeNOPass','Denied Access: Wrong PASSWORD','刷卡禁止通过: 密码不对',
+'8','SwipeNOPass','Denied Access: AntiBack','刷卡禁止通过: 反潜回',
+'9','SwipeNOPass','Denied Access: More Cards','刷卡禁止通过: 多卡',
+'10','SwipeNOPass','Denied Access: First Card Open','刷卡禁止通过: 首卡',
+'11','SwipeNOPass','Denied Access: Door Set NC','刷卡禁止通过: 门为常闭',
+'12','SwipeNOPass','Denied Access: InterLock','刷卡禁止通过: 互锁',
+'13','SwipeNOPass','Denied Access: Limited Times','刷卡禁止通过: 受刷卡次数限制',
+'14','SwipeNOPass','Denied Access: Limited Person Indoor','刷卡禁止通过: 门内人数限制',
+'15','SwipeNOPass','Denied Access: Invalid Timezone','刷卡禁止通过: 卡过期或不在有效时段',
+'16','SwipeNOPass','Denied Access: In Order','刷卡禁止通过: 按顺序进出限制',
+'17','SwipeNOPass','Denied Access: SWIPE GAP LIMIT','刷卡禁止通过: 刷卡间隔约束',
+'18','SwipeNOPass','Denied Access','刷卡禁止通过: 原因不明',
+'19','SwipeNOPass','Denied Access: Limited Times','刷卡禁止通过: 刷卡次数限制',
+'20','ValidEvent','Push Button','按钮开门',
+'21','ValidEvent','Push Button Open','按钮开',
+'22','ValidEvent','Push Button Close','按钮关',
+'23','ValidEvent','Door Open','门打开[门磁信号]',
+'24','ValidEvent','Door Closed','门关闭[门磁信号]',
+'25','ValidEvent','Super Password Open Door','超级密码开门',
+'26','ValidEvent','Super Password Open','超级密码开',
+'27','ValidEvent','Super Password Close','超级密码关',
+'28','Warn','Controller Power On','控制器上电',
+'29','Warn','Controller Reset','控制器复位',
+'30','Warn','Push Button Invalid: Disable','按钮不开门: 按钮禁用',
+'31','Warn','Push Button Invalid: Forced Lock','按钮不开门: 强制关门',
+'32','Warn','Push Button Invalid: Not On Line','按钮不开门: 门不在线',
+'33','Warn','Push Button Invalid: InterLock','按钮不开门: 互锁',
+'34','Warn','Threat','胁迫报警',
+'35','Warn','Threat Open','胁迫报警开',
+'36','Warn','Threat Close','胁迫报警关',
+'37','Warn','Open too long','门长时间未关报警[合法开门后]',
+'38','Warn','Forced Open','强行闯入报警',
+'39','Warn','Fire','火警',
+'40','Warn','Forced Close','强制关门',
+'41','Warn','Guard Against Theft','防盗报警',
+'42','Warn','7*24Hour Zone','烟雾煤气温度报警',
+'43','Warn','Emergency Call','紧急呼救报警',
+'44','RemoteOpen','Remote Open Door','操作员远程开门',
+'45','RemoteOpen','Remote Open Door By USB Reader','发卡器确定发出的远程开门'
+        );
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+controllerSN, watchServerPort : Cardinal;
+controllerIP, watchServerIP: PChar;
+begin
+	//本案例未作搜索控制器  及 设置IP的工作  (直接由IP设置工具来完成)
+	//本案例中测试说明
+	//控制器SN  = 229999901
+	//控制器IP  = 192.168.168.123
+	//电脑  IP  = 192.168.168.101
+	//用于作为接收服务器的IP (本电脑IP 192.168.168.101), 接收服务器端口 (61005)
+  controllerSN := StrToInt(Edit1.Text); // Cardinal(Edit1.Text);    //229999901
+  controllerIP := PChar(Edit2.Text); //'192.168.168.123';
+
+  log ('基本功能测试 开始');
+	testBasicFunction(controllerIP,controllerSN); //基本功能测试
+end;
+
+
+
+
+procedure arrayReset(var data: array of Byte);
+var
+i:integer;
+begin
+for i:=0 to Length(data)-1 do data[i]:= 0;
+end;
+
+procedure TForm1.log(info:PChar);
+var
+    pcTime, recordTime, controllerTime: TDatetime;
+    Year, Month, Day,  Hour, Min, Sec, MSec: Word;
+begin
+    pcTime := Now();
+    DecodeTime(pcTime, Hour, Min, Sec, MSec);
+    //Memo1.Lines.Add(info);
+    Memo1.Lines.Add(format('%02u:%02u:%02u %s',[Hour, Min, Sec, info]));
+end;
+
+procedure TForm1.logStr(const info:String);
+var
+    pcTime, recordTime, controllerTime: TDatetime;
+    Year, Month, Day,  Hour, Min, Sec, MSec: Word;
+begin
+    pcTime := Now();
+    DecodeTime(pcTime, Hour, Min, Sec, MSec);
+    //Memo1.Lines.Add(info);
+    Memo1.Lines.Add(format('%02u:%02u:%02u %s',[Hour, Min, Sec, info]));
+end;
+
+
+function  TForm1.pktrun (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte):integer;
+var
+  tries: integer;
+  ret: integer;
+begin
+   inc(sendSequenceId);
+   CopyMemory(@(ASendBuff[40]),@sendSequenceId,4);   //序号
+   tries :=3;
+   ret := -1;
+   while(tries >0) do
+      begin
+         IdUDPClient1.SendBuffer(ASendBuff  ,WGPacketShort.WGPacketSize);
+         if (IdUDPClient1.ReceiveBuffer(BReceiveBuff,WGPacketShort.WGPacketSize)
+         = WGPacketShort.WGPacketSize) then
+         //检查类型, 功能号, 流水号要一致
+         if ((ASendBuff[0] = BReceiveBuff[0])
+           and (ASendBuff[1]= BReceiveBuff[1])
+           and (ASendBuff[40]= BReceiveBuff[40]) and (ASendBuff[41]= BReceiveBuff[41])
+           and (ASendBuff[42]= BReceiveBuff[42]) and (ASendBuff[43]= BReceiveBuff[43])) then
+          begin
+            ret :=1;
+            break;
+         end;
+         tries := tries -1;
+   end;
+   pktrun := ret;
+end;
+
+function  TForm1.pktrunWithPassword (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte; var password: array of Byte):integer;
+var
+  tries: integer;
+  ret: integer;
+begin
+   inc(sendSequenceId);
+   CopyMemory(@(ASendBuff[40]),@sendSequenceId,4);   //序号
+   WGPacketShort.ShortEncrypt(@(ASendBuff[0]), @(password[0]));
+   tries :=3;
+   ret := -1;
+   while(tries >0) do
+      begin
+         IdUDPClient1.SendBuffer(ASendBuff  ,WGPacketShort.WGPacketSize);
+         if (IdUDPClient1.ReceiveBuffer(BReceiveBuff,WGPacketShort.WGPacketSize)
+         = WGPacketShort.WGPacketSize) then
+         WGPacketShort.ShortDecrypt(@(BReceiveBuff[0]), @(password[0]));
+         WGPacketShort.ShortDecrypt(@(ASendBuff[0]), @(password[0]));
+         //检查类型, 功能号, 流水号要一致
+         if ((ASendBuff[0] = BReceiveBuff[0])
+           and (ASendBuff[1]= BReceiveBuff[1])
+           and (ASendBuff[40]= BReceiveBuff[40]) and (ASendBuff[41]= BReceiveBuff[41])
+           and (ASendBuff[42]= BReceiveBuff[42]) and (ASendBuff[43]= BReceiveBuff[43])) then
+          begin
+            ret :=1;
+            break;
+         end;
+         tries := tries -1;
+   end;
+   pktrunWithPassword := ret;
+end;
+
+//1024字节指令 兼容密码或密码为空
+function  TForm1.pktrunWithPassword1024 (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte; var password: array of Byte):integer;
+var
+  tries: integer;
+  ret: integer;
+  buffBk: array [0..63] of byte;
+  i: integer;
+  functionID, commandtype: integer;
+  sendSequenceIdCurrent: integer;
+  recvSequenceIdCurrent: integer;
+begin
+   commandtype := ASendBuff[0];
+   functionID := ASendBuff[1];
+     CopyMemory(@sendSequenceIdCurrent,@(ASendBuff[40]),4);   //序号
+      //加密
+         
+    for i := 0 to 16-1  do
+                   begin
+                        CopyMemory(@(buffBk[0]),@(ASendBuff[i*64]),64);
+                        WGPacketShort.ShortEncrypt(@(buffBk[0]), @(password[0]));
+                        CopyMemory(@(ASendBuff[i*64]),@(buffBk[0]),64);
+                    end ;
+
+    tries :=3;
+   ret := -1;
+   while(tries >0) do
+      begin
+         IdUDPClient1.SendBuffer(ASendBuff, 1024);
+         if (IdUDPClient1.ReceiveBuffer(BReceiveBuff,1024)
+         = 1024) then
+              for  i := 0 to  16-1 do
+              begin
+                   CopyMemory(@(buffBk[0]),@(BReceiveBuff[i*64]),64);
+                   WGPacketShort.ShortDecrypt(@(buffBk[0]), @(password[0]));
+                   CopyMemory(@(BReceiveBuff[i*64]),@(buffBk[0]),64);
+              end;
+        CopyMemory(@recvSequenceIdCurrent,@(BReceiveBuff[40]),4);   //序号
+
+         //检查类型, 功能号 序号要一致
+         if ((commandtype = BReceiveBuff[0])
+           and (functionID= BReceiveBuff[1])
+           and (recvSequenceIdCurrent = sendSequenceIdCurrent)
+           ) then
+          begin
+            ret :=1;
+            break;
+         end;
+         tries := tries -1;
+   end;
+   pktrunWithPassword1024 := ret;
+end;
+
+//2015-11-07 10:38:01 没有密码的1024字节指令
+function  TForm1.pktrun1024 (var ASendBuff: array of Byte; var BReceiveBuff: array of Byte):integer;
+var
+  tries: integer;
+  ret: integer;
+  i: integer;
+  functionID, commandtype: integer;
+  sendSequenceIdCurrent: integer;
+  recvSequenceIdCurrent: integer;
+begin
+   commandtype := ASendBuff[0];
+   functionID := ASendBuff[1];
+     CopyMemory(@sendSequenceIdCurrent,@(ASendBuff[40]),4);   //序号
+   tries :=3;
+   ret := -1;
+   while(tries >0) do
+      begin
+         IdUDPClient1.SendBuffer(ASendBuff, 1024);
+         if (IdUDPClient1.ReceiveBuffer(BReceiveBuff,1024)
+         = 1024) then
+         CopyMemory(@recvSequenceIdCurrent,@(BReceiveBuff[40]),4);   //序号
+
+         //检查类型, 功能号 序号要一致
+         if ((commandtype = BReceiveBuff[0])
+           and (functionID= BReceiveBuff[1])
+           and (recvSequenceIdCurrent = sendSequenceIdCurrent)
+           ) then
+         begin
+            ret :=1;
+            break;
+         end;
+         tries := tries -1;
+   end;
+   pktrun1024 := ret;
+end;
+
+function GetHex(val:integer):byte; //获取Hex值, 主要用于日期时间格式
+begin
+  GetHex :=  ((val mod 10) + (((val -(val mod 10)) div 10) mod  10) *16);
+end;
+
+
+
+function getReasonDetailChinese(Reason:integer):string;
+begin
+if (Reason > 45) then
+  getReasonDetailChinese :=  ''
+else   if (Reason <= 0) then
+  getReasonDetailChinese :=  ''
+else
+  getReasonDetailChinese := RecordDetails[(Reason - 1) * 4 + 3]; //中文信息
+end;
+
+function getReasonDetailEnglish(Reason:integer):string;
+begin
+if (Reason > 45) then
+  getReasonDetailEnglish :=  ''
+else   if (Reason <= 0) then
+  getReasonDetailEnglish :=  ''
+else
+  getReasonDetailEnglish := RecordDetails[(Reason - 1) * 4 + 2]; //英文信息
+end;
+
+procedure TForm1.displayRecordInformation(var recvBuff: array of Byte);
+var
+    //与刷卡记录相关变量
+    recordIndex, recordType, recordValid, recordDoorNO, recordInOrOut,
+    recordCardNO, reason:
+               Cardinal;
+begin
+
+		//8-11	最后一条记录的索引号
+		//(=0表示没有记录)	4	0x00000000
+   recordIndex :=0;
+		CopyMemory(@recordIndex, @(recvBuff[8]),4);
+
+		//12	记录类型
+		//0=无记录
+		//1=刷卡记录
+		//2=门磁,按钮, 设备启动, 远程开门记录
+		//3=报警记录	1
+	  recordType := recvBuff[12];
+
+		//13	有效性(0 表示不通过, 1表示通过)	1
+	  recordValid := recvBuff[13];
+
+		//14	门号(1,2,3,4)	1
+	  recordDoorNO := recvBuff[14];
+
+		//15	进门/出门(1表示进门, 2表示出门)	1	0x01
+	 recordInOrOut := recvBuff[15];
+
+		//16-19	卡号(类型是刷卡记录时)
+		//或编号(其他类型记录)	4
+	  recordCardNO := 0;
+		CopyMemory(@recordCardNO, @(recvBuff[16]),4);
+
+		//20-26	刷卡时间:
+		//年月日时分秒 (采用BCD码)见设置时间部分的说明
+//    logStr((format('  记录时间: %02X%02X-%02X-%02X %02X:%02X:%02X',
+//			[recvBuff[20],recvBuff[21],recvBuff[22],recvBuff[23],recvBuff[24],recvBuff[25],recvBuff[26]])));
+
+		//27	记录原因代码(可以查 “刷卡记录说明.xls”文件的ReasonNO)
+		//处理复杂信息才用	1
+    reason := recvBuff[27];
+
+
+    //0=无记录
+            //1=刷卡记录
+            //2=门磁,按钮, 设备启动, 远程开门记录
+            //3=报警记录	1	
+            //0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+            if (recordType = 0) then
+            begin
+                logStr(format('索引位=%u  无记录', [recordIndex]));
+            end
+            else if (recordType = $ff) then
+            begin
+                logStr(' 指定索引位的记录已被覆盖掉了,请使用索引0, 取回最早一条记录的索引值');
+            end
+            else if (recordType = 1) then //2015-06-10 08:49:31 显示记录类型为卡号的数据
+            begin
+                //卡号
+                logStr(format('索引位=%u  ', [recordIndex]));
+                logStr(format('  卡号 = %u', [recordCardNO]));
+                logStr(format('  门号 = %u', [recordDoorNO]));
+                if (recordInOrOut = 1) then
+                  logStr(format('  进出 = %s', ['进门']))
+                else
+                  logStr(format('  进出 = %s', ['出门']));
+
+                if (recordValid = 1) then
+                   logStr(format('  有效 = %s', ['通过']))
+                else
+                   logStr(format('  有效 = %s', ['禁止']));
+                   logStr((format('  时间 = %02X%02X-%02X-%02X %02X:%02X:%02X',
+			[recvBuff[20],recvBuff[21],recvBuff[22],recvBuff[23],recvBuff[24],recvBuff[25],recvBuff[26]])));
+
+                logStr(format('  描述 = %s', [getReasonDetailChinese(reason)]));
+            end
+            else if (recordType = 2) then
+            begin
+                //其他处理
+                //门磁,按钮, 设备启动, 远程开门记录
+                logStr(format('索引位=%u  非刷卡记录', [recordIndex]));
+                logStr(format('  编号 = %u', [recordCardNO]));
+                logStr(format('  门号 = %u', [recordDoorNO]));
+                logStr((format('  时间 = %02X%02X-%02X-%02X %02X:%02X:%02X',
+			[recvBuff[20],recvBuff[21],recvBuff[22],recvBuff[23],recvBuff[24],recvBuff[25],recvBuff[26]])));
+               logStr(format('  描述 = %s', [getReasonDetailChinese(reason)]));
+            end
+            else if (recordType = 3) then
+            begin
+                //其他处理
+                //报警记录
+                logStr(format('索引位=%u  报警记录', [recordIndex]));
+                logStr(format('  编号 = %u', [recordCardNO]));
+                logStr(format('  门号 = %u', [recordDoorNO]));
+                logStr((format('  时间 = %02X%02X-%02X-%02X %02X:%02X:%02X',
+			[recvBuff[20],recvBuff[21],recvBuff[22],recvBuff[23],recvBuff[24],recvBuff[25],recvBuff[26]])));
+                logStr(format('  描述 = %s', [getReasonDetailChinese(reason)]));
+            end;
+end;
+
+procedure  TForm1.testBasicFunction( ip: PChar; const controllerSN: Cardinal);
+var
+    sendBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    recvBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    ret: integer;
+    i: integer;
+    tries: integer;
+    success: integer;
+
+    //与刷卡记录相关变量
+    recordIndex, recordType, recordValid, recordDoorNO, recordInOrOut,
+    recordCardNO, reason, errCode, sequenceId, relayStatus, otherInputStatus:
+               Cardinal;
+
+    doorStatus, pbStatus: array[0..3] of integer;
+    pcTime, recordTime, controllerTime: TDatetime;
+    Year, Month, Day,  Hour, Min, Sec, MSec: Word;
+
+    recordIndexToGet: Cardinal;
+    recordIndexGot: Cardinal;
+		recordIndexToGetStart: Cardinal;
+		recordIndexValidGet: Cardinal;
+
+    doorNO: byte;
+    cardNOOfPrivilege, privilegeCount : Cardinal;
+
+    recordIndexGotToRead: Cardinal;
+
+    cardArray: array[0..9999] of Cardinal;
+    cardCount: Cardinal;
+            j: integer;
+    command: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    password: array[0..(16-1)] of Byte;
+    const
+   testcommPassword: array[0..(16-1)] of Byte = ( $11, $22, $33, $44, $55, $66, $77, $88, $99, $AA, $BB, $CC, $DD, $EE, $FF, $00 ); //16字节密码
+
+begin
+    IdUDPClient1.Host := ip;
+    IdUDPClient1.Port := WGPacketShort.ControllerPort;
+    IdUDPClient1.ReceiveTimeout := 400;
+
+    logStr(format('  控制器SN: %u',[controllerSN]));
+
+
+     //设置通信密码[功能号: 0xF0] **********************************************************************************
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $F0;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+    CopyMemory(@(password[0]),@(testcommPassword[0]),16);
+          //防止误操作标识
+    i := WGPacketShort.SpecialFlag;
+    CopyMemory(@(sendBuff[8]),@i,4);
+
+    for i:= 0 to  16-1 do      //2015-11-02 10:21:00设置新密码
+     begin
+        sendBuff[12 + i] := password[i];
+        sendBuff[44 + i] := password[i];
+     end;
+    ret := pktrun(sendBuff, recvBuff);
+  	success :=0;
+  	if (ret = 1)  then
+    begin
+              if (recvBuff[8] = 1)     then
+              begin
+                    log('通信密码设置成功...');
+                    success := 1;
+              end
+    end;
+
+
+    if (success = 0) then
+    begin
+        ret :=  pktrunWithPassword(sendBuff, recvBuff, password);      //2015-11-02 10:21:22 再尝试控制器已有密码的操作
+        if ((ret = 1) and (recvBuff[8] = 1))     then
+              begin
+                    log('通信密码设置成功...');
+                    success := 1;
+              end
+         else
+              begin
+              log('通信密码设置失败...[通过加密通信操作]');
+              end
+    end;
+
+
+	//1.10	远程开门[功能号: 0x40] **********************************************************************************
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $40;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+    doorNO :=1;
+    sendBuff[8] := doorNO;
+    ret :=  pktrunWithPassword(sendBuff, recvBuff, password);
+  	success :=0;
+  	if (ret = 1)  then
+  	if (recvBuff[8] = 1)  then
+	  Begin
+		success :=1;
+ 			//有效开门.....
+		log('1.10 远程开门	 成功...[通过加密通信操作]');
+    end;
+     if (success = 0) then    	log('1.10 远程开门	 失败...[通过加密通信操作]');
+
+     //清空通信密码[功能号: 0xF0] **********************************************************************************
+   arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $F0;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+    CopyMemory(@(password[0]),@(testcommPassword[0]),16);
+          //防止误操作标识
+    i := WGPacketShort.SpecialFlag;
+    CopyMemory(@(sendBuff[8]),@i,4);
+
+   for i:= 0 to  16-1 do      //清空密码
+     begin
+                sendBuff[12 + i] := 0;
+               sendBuff[44 + i] := 0;
+     end;
+     ret :=  pktrunWithPassword(sendBuff, recvBuff, password);      //2015-11-02 10:21:22 再尝试控制器已有密码的操作
+        if ((ret = 1) and (recvBuff[8] = 1))     then
+              begin
+                    log('通信密码清空成功...[通过加密通信操作]');
+                    success := 1;
+              end
+         else
+              begin
+              log('通信密码清空失败...[通过加密通信操作]');
+              end
+
+
+
+	//其他指令  **********************************************************************************
+
+
+	// **********************************************************************************
+
+	//结束  **********************************************************************************
+
+end;
+
+function split(s,s1:string):TStringList;
+begin
+Result:=TStringList.Create;
+while Pos(s1,s)>0 do
+begin
+Result.Add(Copy(s,1,Pos(s1,s)-1));
+Delete(s,1,Pos(s1,s));
+end;
+Result.Add(s);
+end;
+
+
+//ControllerIP 被设置的控制器IP地址
+//controllerSN 被设置的控制器序列号
+//watchServerIP   要设置的服务器IP
+//watchServerPort 要设置的端口
+procedure  TFORM1.testWatchingServer( ip: PChar; const controllerSN: Cardinal;   watchServerIP: PChar; const watchServerPort: Cardinal);
+        //接收服务器设置
+var
+    sendBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    recvBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    ret: integer;
+    i: integer;
+    tries: integer;
+    success: integer;
+    Ar:   TStringList;
+    str1: string;
+begin
+    IdUDPClient1.Host := ip;
+    IdUDPClient1.Port := WGPacketShort.ControllerPort;
+    IdUDPClient1.ReceiveTimeout := 400;
+
+	//1.18	设置接收服务器的IP和端口 [功能号: 0x90] **********************************************************************************
+	//	接收服务器的IP: 192.168.168.101  [当前电脑IP]
+	//(如果不想让控制器发出数据, 只要将接收服务器的IP设为0.0.0.0 就行了)
+	//接收服务器的端口: 61005
+	//每隔5秒发送一次: 05
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $90;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+	//服务器IP: 192.168.168.101
+	//sendBuff[8 + 0] = 192;
+	//sendBuff[8 + 1] = 168;
+	//sendBuff[8 + 2] = 168;
+	//sendBuff[8 + 3] = 101;
+  Ar   :=   split(watchServerIP,   '.');
+  if   Ar.Count   <>   4   then
+  begin
+   log('watchServerIP 地址不合理');
+   Exit;
+  end;
+  sendBuff[8 + 0] := StrToInt(Ar[0]);
+	sendBuff[8 + 1] := StrToInt(Ar[1]);
+	sendBuff[8 + 2] := StrToInt(Ar[2]);
+	sendBuff[8 + 3] := StrToInt(Ar[3]);
+  	//接收服务器的端口: 61005
+	sendBuff[8 + 4] := (watchServerPort and $ff);
+	sendBuff[8 + 5] := (watchServerPort shr 8) and $ff;
+
+  	//每隔5秒发送一次: 05 (定时上传信息的周期为5秒 [正常运行时每隔5秒发送一次  有刷卡时立即发送])
+	sendBuff[8 + 6] := 5;
+
+    ret :=  pktrun(sendBuff, recvBuff);
+  	success :=0;
+  	if (ret = 1)  then
+  	if (recvBuff[8] = 1)  then
+	  Begin
+		success :=1;
+		log('1.18 设置接收服务器的IP和端口 	 成功...');
+    end;
+
+	//1.19	读取接收服务器的IP和端口 [功能号: 0x92] **********************************************************************************
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $92;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+    ret :=  pktrun(sendBuff, recvBuff);
+  	success :=0;
+  	if (ret = 1)  then
+	  Begin
+		success :=1;
+		log('1.19 读取接收服务器的IP和端口 	 成功...');
+    end;
+end;
+
+procedure  TFORM1.WatchingServerRuning(  watchServerIP: PChar; const watchServerPort: Cardinal);
+begin
+    IdUDPServer1.Bindings.add.Port := watchServerPort;
+    IdUDPServer1.OnUDPRead := UDPServerUDPRead;
+    IdUDPServer1.Active := True;
+  log('进入接收服务器监控状态....');
+
+end;
+
+//接收到数据的处理
+procedure TFORM1.UDPServerUDPRead(Sender: TObject; AData: TStream; ABinding: TIdSocketHandle);
+var
+  recvBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+  recordType,sn,recordIndex, recordCardNO: Cardinal;
+begin
+ if (AData.Size = WGPacketShort.WGPacketSize ) then
+ begin
+   AData.Read(recvBuff, AData.Size);
+   if  (recvBuff[1]= $20) then
+   begin
+		CopyMemory(@sn, @(recvBuff[4]),4);
+	  logStr(format('接收到来自控制器SN = %d 的数据包..', [sn]));
+
+   // logStr(format('%s:%d>', [ABinding.PeerIP, ABinding.PeerPort ]));
+
+    recordIndex :=0;
+		CopyMemory(@recordIndex, @(recvBuff[8]),4);
+    if (recordIndex > watchingrecordIndex) then
+    begin
+	     watchingrecordIndex := recordIndex;
+       displayRecordInformation(recvBuff);
+    end;
+ end;
+end;
+end;
+procedure TForm1.Button2Click(Sender: TObject);
+var
+controllerSN, watchServerPort : Cardinal;
+    command1024: array[0..(1024-1)] of Byte;
+    recvBuff1024: array[0..(1024-1)] of Byte;
+    ip: PChar;
+
+    sendBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    recvBuff: array[0..(WGPacketShort.WGPacketSize-1)] of Byte;
+    ret: integer;
+    i: integer;
+    tries: integer;
+    success: integer;
+
+    //与刷卡记录相关变量
+    recordIndex, recordType, recordValid, recordDoorNO, recordInOrOut,
+    recordCardNO, reason, errCode, sequenceId, relayStatus, otherInputStatus:
+               Cardinal;
+
+    doorStatus, pbStatus: array[0..3] of integer;
+    pcTime, recordTime, controllerTime: TDatetime;
+    Year, Month, Day,  Hour, Min, Sec, MSec: Word;
+
+    recordIndexToGet: Cardinal;
+    recordIndexGot: Cardinal;
+		recordIndexToGetStart: Cardinal;
+		recordIndexValidGet: Cardinal;
+
+    doorNO: byte;
+    cardNOOfPrivilege, privilegeCount : Cardinal;
+
+    recordIndexGotToRead: Cardinal;
+
+    cardArray: array[0..200000] of Cardinal;      //20万
+    cardCount: Cardinal;
+            j: integer;
+
+    firstRecordIndex: Cardinal; //第一条记录索引号
+    lastRecordIndex: Cardinal;  //最后一条记录索引号
+    validRecordsCount, recordIndexCurrent: Cardinal;
+    iCount: integer;
+begin
+    controllerSN := StrToInt(Edit1.Text); // Cardinal(Edit1.Text);    //229999901
+    ip := PChar(Edit2.Text); //'192.168.168.123';
+
+    IdUDPClient1.Host := ip;
+    IdUDPClient1.Port := WGPacketShort.ControllerPort;
+    IdUDPClient1.ReceiveTimeout := 400;
+
+    logStr(format('  控制器SN: %u',[controllerSN]));
+
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+
+
+            //1.9	提取记录操作
+            //1. 通过 0xB0指令 获取最早一条记录索引
+            //2. 通过 0xB0指令 获取最后一条记录索引
+            //3. 通过 0xB4指令 获取已读取过的记录索引号 recordIndex
+            //4. 通过 0xB0指令 获取指定索引号的记录  从recordIndex + 1开始提取记录， 直到记录为空为止
+            //5. 通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+            //经过上面步骤， 整个提取记录的操作完成
+
+              firstRecordIndex := 0;  //第一条记录索引号
+             lastRecordIndex := 0;   //最后一条记录索引号
+             recordIndexGotToRead := 0;
+             recordIndexToGet := 0;
+     log('1.9 提取记录操作	 开始...[1024字节指令]');
+
+
+	//. 发出报文 (取最早的一条记录 通过索引号 0x00000000) [此指令适合于 刷卡记录超过20万时环境下使用]
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $B0;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+	  //如果=0, 则取回最早一条记录信息
+	  recordIndexToGet :=0;
+	  CopyMemory(@(sendBuff[8 + 0]), @recordIndexToGet, 4);
+    ret :=  pktrun(sendBuff, recvBuff);
+  	success :=0;
+    firstRecordIndex:=0;
+  	if (ret = 1)  then
+   	  Begin
+ 	 	  success :=1;
+      CopyMemory( @firstRecordIndex,@(recvBuff[8 + 0]), 4);
+ 		  logStr(format(' 最早一条记录索引 firstRecordIndex = %u ',[firstRecordIndex]));
+    end;
+
+     	//发出报文 (取最新的一条记录 通过索引 0xffffffff)
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $B0;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+	  //如果=0xffffffff, 则取回最新一条记录信息
+	  recordIndexToGet :=$ffffffff;
+	  CopyMemory(@(sendBuff[8 + 0]), @recordIndexToGet, 4);
+    ret :=  pktrun(sendBuff, recvBuff);
+  	success :=0;
+    lastRecordIndex:= 0;
+  	if (ret = 1)  then
+   	  Begin
+ 	 	  success :=1;
+		  CopyMemory( @lastRecordIndex,@(recvBuff[8 + 0]), 4);
+ 		  logStr(format(' 最后一条记录索引 lastRecordIndex = %u ',[lastRecordIndex]));
+      end;
+
+
+    //1.9	获取已读取过的记录索引号[功能号: 0xB4] **********************************************************************************
+    arrayReset(sendBuff);
+    sendBuff[0] :=  WGPacketShort.WGPacketType;
+    sendBuff[1] :=  $B4;
+    CopyMemory(@(sendBuff[4]),@controllerSN,4);
+    ret :=  pktrun(sendBuff, recvBuff);
+    success :=0;
+    recordIndexGot := 0;
+    if (ret = 1)  then
+      Begin
+        CopyMemory( @recordIndexGot,@(recvBuff[8 + 0]), 4);
+ 		    logStr(format(' 已读取过的记录索引号 recordIndexGot = %u ',[recordIndexGot]));
+        success :=1;
+    end;
+
+    recordIndexCurrent:=0;
+   	if (ret = 1)  then
+  	  Begin
+	  	  log('开始提取记录 ...[1024字节指令]');
+       //2015-11-07 11:58:06        recordIndexGot := 0; //2015-11-07 11:38:04 强制提取所有记录
+        recordIndexToGetStart := recordIndexGot + 1;
+        if ((recordIndexGot > lastRecordIndex) or (recordIndexGot < firstRecordIndex)) then recordIndexToGetStart := firstRecordIndex;//超过范围 取第一个记录的索引号
+        arrayReset(sendBuff);
+        sendBuff[0] :=  WGPacketShort.WGPacketType;
+        sendBuff[1] :=  $B0;
+        CopyMemory(@(sendBuff[4]),@controllerSN,4);
+        i:=0;
+        validRecordsCount := 0;
+        Repeat
+         recordIndexCurrent := recordIndexToGetStart;
+         for j:= 0 to  1024-1 do   command1024[j] := 0; //复位
+         for j:= 0 to  16-1  do
+           begin
+              inc(sendSequenceId);
+              CopyMemory(@(sendBuff[40]),@sendSequenceId,4);   //序号
+
+              CopyMemory(@(sendBuff[8]), @recordIndexToGetStart, 4);
+              CopyMemory( @(command1024[j*64]),@(sendBuff[0]),  64);
+              inc( recordIndexToGetStart);
+              inc(i);
+           end;
+         ret :=  pktrun1024(command1024, recvBuff1024);
+  	     success :=0;
+
+         if (ret = 1) then
+          begin
+           for j:= 0 to  16-1  do
+             begin
+                success :=0;
+              	//12	记录类型
+								//0=无记录
+								//1=刷卡记录
+								//2=门磁,按钮, 设备启动, 远程开门记录
+								//3=报警记录	1
+								//0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+                CopyMemory(@(recvBuff[0]),  @(recvBuff1024[j*64]), 64);
+								recordType := recvBuff[12];
+								if (recordType = 0) then
+                begin
+                 success :=2;
+                 break; //没有更多记录
+                end;
+								if (recordType = $ff) then
+					     			begin
+
+											success := 0;  //此索引号无效  重新设置索引值
+											break;
+
+										end;
+                success :=1;
+								recordIndexValidGet := recordIndexCurrent;
+           	 	  inc(recordIndexCurrent);
+                inc(validRecordsCount);
+                                    //
+               //2015-11-07 11:57:50
+								//.......对收到的记录作存储处理
+               if (validRecordsCount < 100 ) then //2015-11-05 14:59:20显示前100个, 太多显示处理速度慢 不作分析了...
+           		  begin
+                displayRecordInformation(recvBuff);
+           		  if (validRecordsCount = 99 ) then log(' 为加快提取速度, 超过100个的  不再显示记录信息...');//2015-11-05 14:59:20显示前100个, 太多显示处理速度慢 不作分析了...
+           		 end;
+								//*****
+						   //###############
+            end;
+          end
+          else break;
+
+         if (success <> 1) then  break;
+        until (i >= 200000);
+
+   		  logStr(format(' 完全提取成功, 有效记录数 = %u ',[validRecordsCount]));
+
+        if ((success >0) and (validRecordsCount>0)) then
+          begin
+             arrayReset(sendBuff);
+             sendBuff[0] :=  WGPacketShort.WGPacketType;
+             sendBuff[1] :=  $B2;
+             CopyMemory(@(sendBuff[4]),@controllerSN,4);
+     				 //通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+ 	 	         CopyMemory(@(sendBuff[8 + 0]), @recordIndexValidGet, 4);
+	 	        //12	标识(防止误设置)	1	0x55 [固定]
+             i := WGPacketShort.SpecialFlag;
+             CopyMemory(@(sendBuff[8 + 4]), @i, 4);
+             ret :=  pktrun(sendBuff, recvBuff);
+     		     success :=0;
+     		     if (ret = 1)  then
+             	if (recvBuff[8] = 1)   then
+     		       Begin
+                //完全提取成功....
+ 	  	 		        success :=1;
+				        log('1.9 完全提取成功	  成功...');
+               end;
+          end;
+       end;
+
+
+    //权限上传部分
+    //1.21	权限按从小到大顺序添加[功能号: 0x56] 适用于权限数过1000, 少于8万 **********************************************************************************
+    //此功能实现 完全更新全部权限, 用户不用清空之前的权限. 只是将上传的权限顺序从第1个依次到最后一个上传完成. 如果中途中断的话, 仍以原权限为主
+    //建议权限数更新超过50个, 即可使用此指令
+
+    log('1.21	权限按从小到大顺序添加[功能号: 0x56]	开始...[采用1024字节指令, 每次上传16个权限]');
+
+    //以10000个卡号为例, 此处简化的排序, 直接是以50001开始的10000个卡. 用户按照需要将要上传的卡号排序存放
+    i :=1;
+    cardCount := i*10000;  //2015-06-09 20:20:20 卡总数量   最大20万
+    logStr(format('       %u万条权限...',[i]));
+    for i:= 0 to  cardCount-1 do
+       cardArray[i] := 50001+i;
+    i:=0;
+    while (i< cardCount) do
+    begin
+  	     success :=0;
+         for j:= 0 to  1024-1 do   command1024[j] := 0; //复位
+         for j:= 0 to  16-1  do
+           begin
+               arrayReset(sendBuff);
+               sendBuff[0] :=  WGPacketShort.WGPacketType;
+               sendBuff[1] :=  $56;
+               CopyMemory(@(sendBuff[4]),@controllerSN,4);
+ 	             cardNOOfPrivilege := cardArray[i];
+               CopyMemory(@(sendBuff[8]),@cardNOOfPrivilege,4);
+                 	//20 10 01 01 起始日期:  2010年01月01日   (必须大于2001年)
+              	sendBuff[8 +4] := $20;
+              	sendBuff[8 +5] := $10;
+              	sendBuff[8 +6] := $01;
+              	sendBuff[8 +7] := $01;
+              	//20 29 12 31 截止日期:  2029年12月31日
+              	sendBuff[8 +8] := $20;
+              	sendBuff[8 +9] := $29;
+              	sendBuff[8 +10] := $12;
+              	sendBuff[8 +11] := $31;
+              	//01 允许通过 一号门 [对单门, 双门, 四门控制器有效]
+              	sendBuff[8 +12] := $01;
+              	//01 允许通过 二号门 [对双门, 四门控制器有效]
+              	sendBuff[8 +13] := $01;  //如果禁止2号门, 则只要设为 0x00
+              	//01 允许通过 三号门 [对四门控制器有效]
+              	sendBuff[8 +14] := $01;
+              	//01 允许通过 四号门 [对四门控制器有效]
+              	sendBuff[8 +15] := $01;
+                CopyMemory(@(sendBuff[32]),@cardCount,4);  //总的权限数
+
+                inc(i);
+                CopyMemory(@(sendBuff[35]),@i,4);   //当前权限的索引位(从1开始)
+
+              inc(sendSequenceId);
+              CopyMemory(@(sendBuff[40]),@sendSequenceId,4);   //序号
+
+               CopyMemory( @(command1024[j*64]),@(sendBuff[0]),  64);
+
+              inc( recordIndexToGetStart);
+           end;
+           ret :=  pktrun1024(command1024, recvBuff1024);
+                success :=0;
+                if (ret = 1)  then
+                begin
+                     CopyMemory(@(recvBuff[0]),@(recvBuff1024[0]),64); //取64字节长的数据
+                	  if (recvBuff[8] = 1)  then
+              	    Begin
+              		  success :=1;
+                    end;
+                    if (recvBuff[8] = $E1)  then
+              	    Begin
+              		  log('1.21	权限按从小到大顺序添加[功能号: 0x56]	 =0xE1 表示卡号没有从小到大排序...???');
+                                      success := 0;
+                                      break;
+                    end;
+                end
+                else
+                    break;
+     end;
+
+
+     if (success = 1) then
+                log('1.21	权限按从小到大顺序添加[功能号: 0x56]	 成功...')
+     else
+                log('1.21	权限按从小到大顺序添加[功能号: 0x56]	 失败...????');
+
+        	//1.16  获取指定索引号的权限[功能号: 0x5C] **********************************************************************************
+    log('读取所有权限	 开始...[1024字节]');
+    //以20*10000个卡号为例,
+    cardCount := 20*10000;  //2015-06-09 20:20:20 卡总数量   最大20万
+    for i:= 0 to  cardCount-1 do
+       cardArray[i] := 0;
+    i:=0;
+    while (i< cardCount) do
+    begin
+  	     success :=0;
+         for j:= 0 to  1024-1 do   command1024[j] := 0; //复位
+         for j:= 0 to  16-1  do
+           begin
+               arrayReset(sendBuff);
+               sendBuff[0] :=  WGPacketShort.WGPacketType;
+               sendBuff[1] :=  $5C;
+               CopyMemory(@(sendBuff[4]),@controllerSN,4);
+ 	             inc(sendSequenceId);
+               CopyMemory(@(sendBuff[40]),@sendSequenceId,4);   //序号
+
+               inc(i);
+               CopyMemory(@(sendBuff[8]), @i, 4);   // '索引号(从1开始)
+               CopyMemory( @(command1024[j*64]),@(sendBuff[0]),  64);
+              inc( recordIndexToGetStart);
+           end;
+
+           ret :=  pktrun1024(command1024, recvBuff1024);
+           success :=0;
+
+           if (ret = 1)  then
+           begin
+                    for j:= 0 to  16-1  do
+                    begin
+                        CopyMemory(@(recvBuff[0]),@(recvBuff1024[j*64]),64); //取64字节长的数据
+                        CopyMemory(@cardNOOfPrivilege,@(recvBuff[8]),4);
+                        if ( cardNOOfPrivilege = $ffffffff)  then
+                        begin
+                         success := 1;
+                           //log('1.16      没有权限信息: (权限已删除)')
+                        end
+                        else if  ( cardNOOfPrivilege = $0)  then
+                        begin
+                          success:= 0;
+                          //log('1.16       没有权限信息: (卡号部分为0)--此索引号之后没有权限了')
+                          break;
+                        end
+                      else
+                        // log('1.16      有权限信息...');
+                    	    Begin
+                          success :=1;
+                          cardArray[iCount] := cardNOOfPrivilege;
+                          inc(iCount);
+                          end;
+                    end
+                end
+             else
+                    break;
+
+     end;
+
+     cardNOOfPrivilege :=  cardArray[iCount-1];
+     logStr(format(' 最后读取到的权限的卡号= %u ',[cardNOOfPrivilege]));
+     logStr(format(' 提取到的权限数iCount = %u ',[iCount]));
+
+	// **********************************************************************************
+
+	//结束  **********************************************************************************
+
+end;
+
+end.

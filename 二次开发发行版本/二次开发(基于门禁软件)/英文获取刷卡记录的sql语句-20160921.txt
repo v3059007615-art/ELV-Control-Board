@@ -1,0 +1,19 @@
+SELECT t_d_SwipeRecord.f_RecID AS 'RecID', 
+              t_d_SwipeRecord.f_CardNO AS 'CardNO',  
+              t_b_Consumer.f_ConsumerNO AS 'ConsumerNO', 
+              t_b_Consumer.f_ConsumerName AS 'Name', 
+              t_b_Group.f_GroupName AS 'Department', 
+              t_d_SwipeRecord.f_ReadDate AS 'Time', 
+              t_b_Reader.f_ReaderName  AS 'Address',
+   CASE WHEN t_d_SwipeRecord.f_Character =1 THEN 'Passed' ELSE 'NO Pass' END  AS 'Valid',
+   CASE WHEN t_d_SwipeRecord.f_InOut=0 THEN 'OUT' ELSE 'IN' END  AS 'IN_OUT',
+             t_b_Door.f_DoorName  AS 'DoorName',
+             t_d_SwipeRecord.f_RecordAll AS 'recdata'
+       FROM (((t_d_SwipeRecord INNER JOIN t_b_Consumer ON ( t_b_Consumer.f_ConsumerID = t_d_SwipeRecord.f_ConsumerID))  
+                LEFT JOIN   t_b_Reader on ( t_b_Reader.f_ReaderID = t_d_SwipeRecord.f_ReaderID) )  
+                LEFT JOIN t_b_Group ON (t_b_Consumer.f_GroupID = t_b_Group.f_GroupID  ))
+                LEFT JOIN t_b_Door ON (t_b_Door.f_ControllerID = t_b_Reader.f_ControllerID 
+                and ((f_ControllerSN>400000000 and t_b_Door.f_DoorNO = t_b_Reader.f_ReaderNO)
+                or (f_ControllerSN<400000000 and (((t_b_Door.f_DoorNO*2) = t_b_Reader.f_ReaderNO) or ((t_b_Door.f_DoorNO*2-1) = t_b_Reader.f_ReaderNO))))
+                  )
+        WHERE ( ((((f_RecOption - (f_RecOption % 2)) / 2) % 2) =0))

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+WGController32_VB.NET
+</name>
+</assembly>
+<members>
+<member name="P:WGController32_VB.NET.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:WGController32_VB.NET.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:WGController32_VB.NET.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="M:WGController32_VB.NET.Form1.WGPacketShort.sequenceIdSent">
+	<summary>
+ 最后发出的流水号
+ </summary>
+	<returns></returns>
+</member><member name="M:WGController32_VB.NET.Form1.WGPacketShort.close">
+	<summary>
+ 关闭
+ </summary>
+</member><member name="T:WGController32_VB.NET.Form1.WGPacketShort">
+	<summary>
+ 短报文
+ </summary>
+</member><member name="M:WGController32_VB.NET.Form1.byteToLong(System.Byte[],System.Int32,System.Int32)">
+	<summary>
+ 4字节转成整型数(低位前, 高位后)
+ </summary>
+	<param name="buff">字节数组</param>
+	<param name="start">起始索引位(从0开始计)</param>
+	<param name="len">长度</param>
+	<returns>整型数</returns>
+</member><member name="M:WGController32_VB.NET.Form1.LongToBytes(System.Byte[]@,System.Int32,System.Int64)">
+	<summary>
+ 整型数转换为4字节数组
+ </summary>
+	<param name="outBytes">数组</param>
+	<param name="startIndex">起始索引位(从0开始计)</param>
+	<param name="val">数值</param>
+</member><member name="M:WGController32_VB.NET.Form1.GetHex(System.Int32)">
+	<summary>
+ 获取Hex值, 主要用于日期时间格式
+ </summary>
+	<param name="val">数值</param>
+	<returns>Hex值</returns>
+</member><member name="M:WGController32_VB.NET.Form1.displayRecordInformation(System.Byte[]@)">
+	<summary>
+ 显示记录信息
+ </summary>
+	<param name="recv"></param>
+	<remarks></remarks>
+</member><member name="M:WGController32_VB.NET.Form1.testBasicFunction(System.String,System.Int64)">
+	<summary>
+ 基本功能测试
+ </summary>
+	<param name="ControllerIP">控制器IP地址</param>
+	<param name="controllerSN"> 控制器序列号</param>
+	<returns>小于或等于0 失败, 1表示成功</returns>
+</member><member name="M:WGController32_VB.NET.Form1.testWatchingServer(System.String,System.Int64,System.String,System.Int32)">
+	<summary>
+ 接收服务器设置测试
+ </summary>
+	<param name="ControllerIP">被设置的控制器IP地址</param>
+	<param name="controllerSN">被设置的控制器序列号</param>
+	<param name="watchServerIP">要设置的服务器IP</param>
+	<param name="watchServerPort">要设置的端口</param>
+	<returns>0 失败, 1表示成功</returns>
+</member><member name="M:WGController32_VB.NET.Form1.WatchingServerRuning(System.String,System.Int32)">
+	<summary>
+ 打开接收服务器接收数据 (注意防火墙 要允许此端口的所有包进入才行)
+ </summary>
+	<param name="watchServerIP">接收服务器IP(一般是当前电脑IP)</param>
+	<param name="watchServerPort">接收服务器端口</param>
+	<returns>1 表示成功,否则失败</returns>
+</member>
+</members>
+</doc>

@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>n3kAdrtC</name>
+    </assembly>
+    <members>
+        <member name="T:WG3000_COMM.Core.wgUdpServerCom">
+            <summary>
+            接收服务器
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.Dispose(System.Boolean)">
+            <summary>
+            释放资源1
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.Dispose">
+            <summary>
+            释放资源
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.Close">
+            <summary>
+            关闭
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.#ctor(System.String,System.Int32)">
+            <summary>
+            接收服务器初始化
+            </summary>
+            <param name="IP">接收服务器的IP地址(一般为当前电脑IP)</param>
+            <param name="port">接收服务器的Port端口</param>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.getRecords">
+            <summary>
+            获取接收到的数据包[每次一个包]
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.receivedCount">
+            <summary>
+            缓冲区中的数据包个数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpServerCom.IsWatching">
+            <summary>
+            是否处于监控接收状态
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WG3000_COMM.Core.wgUdpComm">
+            <summary>
+            wg UDP 通信模块
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.Dispose(System.Boolean)">
+            <summary>
+            释放资源1
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.Dispose">
+            <summary>
+            释放资源
+            </summary>
+        </member>
+        <member name="F:WG3000_COMM.Core.wgUdpComm.triesTotal">
+            <summary>
+            通信重试次数总计
+            </summary>
+        </member>
+        <member name="F:WG3000_COMM.Core.wgUdpComm.timeourMsInternet">
+            <summary>
+            广域网额外延时
+            </summary>
+        </member>
+        <member name="F:WG3000_COMM.Core.wgUdpComm.CommTimeoutMsMin">
+            <summary>
+            最小延时 [单位: 毫秒]
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.GetPacket">
+            <summary>
+            提取一个数据包
+            </summary>
+            <returns>数据包组</returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.ClearAllPacket">
+            <summary>
+            清空所有的数据包
+            </summary>
+            <returns>true</returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.Close">
+            <summary>
+            关闭时, 退出监听程
+            </summary>
+            <returns>true</returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.#ctor(System.Net.IPAddress)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="localIP">电脑IP地址</param>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.UDPListenProc">
+            <summary>
+            监听端口线程 收到的数据放入到UDPQueue队列中
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.getXidOfCommand(System.Byte[])">
+            <summary>
+            获取指令中的发送包的id
+            </summary>
+            <param name="cmd">指令数据组</param>
+            <returns>发送包的id号</returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.GetIPEndByIPAddr(System.String,System.Int32,System.Net.IPEndPoint@)">
+            <summary>
+            获取发送点
+            </summary>
+            <param name="ipAddr">ip地址</param>
+            <param name="ipPort">port端口号</param>
+            <param name="endp">获取到的发送点</param>
+            <returns>-1表示失败; 0 表示广播方式, 1表示正常局域网IP方式, 2表示广播网ip方式</returns>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgUdpComm.udp_get(System.Byte[],System.Int32,System.UInt32,System.String,System.Int32,System.Byte[]@)">
+            <summary>
+            获取数据, 返回在recv中
+            </summary>
+            <param name="cmd">指令</param>
+            <param name="parWaitMs">等待时间(单位: 毫秒)</param>
+            <param name="xid">发送包id</param>
+            <param name="ipAddr">ip地址</param>
+            <param name="ipPort">port端口号</param>
+            <param name="recv">接收到的数据</param>
+            <returns>=1 表示成功; 小于0 或-13表示失败; </returns>
+        </member>
+        <member name="P:WG3000_COMM.Core.wgUdpComm.PacketCount">
+            <summary>
+            接收到的数据包的个数
+            </summary>
+        </member>
+        <member name="P:WG3000_COMM.Core.wgUdpComm.localIP">
+            <summary>
+            电脑的IP地址
+            </summary>
+        </member>
+        <member name="P:WG3000_COMM.Core.wgUdpComm.defaultNetworkIP">
+            <summary>
+            缺省网络IP
+            </summary>
+        </member>
+        <member name="T:WG3000_COMM.Core.wgMjController">
+            <summary>
+            控制器类
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgMjController.Dispose(System.Boolean)">
+            <summary>
+            释放资源1
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgMjController.Dispose">
+            <summary>
+            释放资源
+            </summary>
+        </member>
+        <member name="F:WG3000_COMM.Core.wgMjController.CommTimeoutMsMin">
+            <summary>
+            最小延时 [单位: 毫秒]
+            </summary>
+        </member>
+        <member name="M:WG3000_COMM.Core.wgMjController.ShortPacketSend(System.Byte[],System.Byte[]@)">
+            <summary>
+            发送短报文协议指令
+            </summary>
+            <param name="cmd">指令 64字节长度</param>
+            <param name="recv">接收到的数据</param>
+            <returns>通信成功返回1, 失败返回负值  (-2表示指令长度不对)</returns>
+        </member>
+        <member name="P:WG3000_COMM.Core.wgMjController.IP">
+            <summary>
+            控制器 IP地址
+            </summary>
+        </member>
+        <member name="P:WG3000_COMM.Core.wgMjController.PORT">
+            <summary>
+            控制器 通信端口 默认为60000
+            </summary>
+        </member>
+    </members>
+</doc>

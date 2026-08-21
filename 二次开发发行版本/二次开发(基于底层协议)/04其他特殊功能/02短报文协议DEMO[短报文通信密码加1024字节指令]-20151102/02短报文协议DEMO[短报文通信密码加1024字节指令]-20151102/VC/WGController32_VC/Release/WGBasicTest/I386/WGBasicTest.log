@@ -1,0 +1,22 @@
+﻿生成启动时间为 2015-11-08 13:26:01。
+     1>项目“D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\VC\WGController32_VC\WGBasicTest.vcxproj”在节点 2 上(build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“Release\WGBasicTest\I386\WGComm_Test.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\.. /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D NDEBUG /D WIN32 /D _CONSOLE /D _CRT_NONSTDC_NO_WARNINGS /D _CRT_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"Release\WGBasicTest\I386\\" /Fd"Release\WGBasicTest\I386\vc100.pdb" /Gd /TP /wd4355 /analyze- /errorReport:prompt WGBasicTest.cpp
+         WGBasicTest.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\WGBasicTest.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:. /LIBPATH:..\..\..\lib n3kWGCom.lib ACE.lib iphlpapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\WGBasicTest\I386\WGBasicTest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\VC\WGController32_VC\WGBasicTest.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\WGBasicTest.lib" /MACHINE:X86 Release\WGBasicTest\I386\WGBasicTest.obj
+         正在生成代码
+         已完成代码的生成
+         WGBasicTest.vcxproj -> D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\VC\WGController32_VC\.\WGBasicTest.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\WGBasicTest.exe;#1" /manifest Release\WGBasicTest\I386\WGBasicTest.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         正在删除文件“Release\WGBasicTest\I386\WGComm_Test.unsuccessfulbuild”。
+         正在对“Release\WGBasicTest\I386\WGComm_Test.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\VC\WGController32_VC\WGBasicTest.vcxproj”(build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:00.95
