@@ -24,7 +24,7 @@ import org.wiegand.at8000.WgUdpCommShort;
     		this.queue = queue;
     	}
         /**
-         * 异常来关闭session
+         * Unusual to close.session
          */
         @Override
         public void exceptionCaught(IoSession session, Throwable cause)
@@ -34,7 +34,7 @@ import org.wiegand.at8000.WgUdpCommShort;
         }
 
         /**
-         * 服务器端收到一个消息
+         * The server received a message.
          */
         @Override
         public void messageReceived(IoSession session, Object message)
@@ -54,7 +54,7 @@ import org.wiegand.at8000.WgUdpCommShort;
     			}
     			else
     			{
-    				//System.out.print("收到无效数据包: ????\r\n");
+    				//System.out.print("Invalid package received: ????\r\n");
     			}
     			//System.out.println("");
     		}
@@ -62,12 +62,12 @@ import org.wiegand.at8000.WgUdpCommShort;
 
         @Override
         public void sessionClosed(IoSession session) throws Exception {
-//            System.out.println("服务器端关闭session...");
+//            System.out.println("Serverend Closesession...");
         }
 
         @Override
         public void sessionCreated(IoSession session) throws Exception {
-//            System.out.println("服务器端成功创建一个session...");
+//            System.out.println("Serverend successfully createdsession...");
         }
 
         @Override
@@ -78,6 +78,6 @@ import org.wiegand.at8000.WgUdpCommShort;
 
         @Override
         public void sessionOpened(IoSession session) throws Exception {
-//            System.out.println("服务器端成功开启一个session...");
+//            System.out.println("Server-end successfully opened onesession...");
         }
     }

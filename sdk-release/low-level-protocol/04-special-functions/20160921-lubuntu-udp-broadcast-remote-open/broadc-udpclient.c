@@ -1,9 +1,9 @@
-//http://zhoulifa.bokee.com/6065720.html 2016-04-19 18:37:28 稍作修改
-//编译这个程序用下列命令：
+//http://zhoulifa.bokee.com/6065720.html 2016-04-19 18:37:28 Modified slightly
+//Compile this program with the following commands：
 //gcc -Wall broadc-udpclient.c -o client
-//运行程序用下列命令：
+//Run the program with the following commands：
 //./client 255.255.255.255 60000
-//就会往网络内所有主机发消息。
+//Send messages to all hosts in the network。
 
 #include <stdio.h>
 #include <string.h>
@@ -17,15 +17,15 @@
 
 /*********************************************************************
 *filename: broadc-udpclient.c
-*purpose: 基本编程步骤说明，演示了UDP编程的广播客户端编程步骤
-*tidied by: zhoulifa(zhoulifa@163.com) 周立发(http://zhoulifa.bokee.com)
-Linux爱好者 Linux知识传播者 SOHO族 开发者 最擅长C语言
+*purpose: Description of basic programming steps，It's a demonstration.UDPProgramming client programming step for programming
+*tidied by: zhoulifa(zhoulifa@163.com) Zhou Lifa(http://zhoulifa.bokee.com)
+LinuxLovers LinuxKnowledge disseminaters SOHOGroup Developer I'm good at it.CLanguages
 *date time:2007-01-24 21:30:00
-*Note: 任何人可以任意复制代码并运用这些文档，当然包括你的商业用途
-* 但请遵循GPL
+*Note: Anyone can copy the codes and apply them.，Including, of course, your commercial use.
+* But please follow.GPL
 *Thanks to: Google.com
-*Hope:希望越来越多的人贡献自己的力量，为科学技术发展出力
-* 科技站在巨人的肩膀上进步更快！感谢有开源前辈的贡献！
+*Hope:I hope more and more people will contribute.，To develop science and technology
+* Technology is moving faster on the shoulders of giants.！Thank you for your contribution.！
 *********************************************************************/
 int main(int argc, char **argv)
 {
@@ -34,26 +34,26 @@ int sock;
 int addr_len;
 int len;
 //char buff[64];
-//搜索控制器
+//Search controller
 //char buff[]={0x17,0x94,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-//远程开门[广播方式]
+//Open remote[Broadcast mode]
 char buff[]={0x17,0x40,0x00,0x00,0xFF,0xFF,0xFF,0xFF,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
 int yes;
 
-/* 创建 socket */
+/* Create socket */
 if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
 perror("socket");
 exit(errno);
 } else
 printf("create socket.\n\r");
 
-/* 设置通讯方式对广播，即本程序发送的一个消息，网络上所有主机均可以收到 */
+/* Set up communication to broadcast，A message from this program，All hosts on the network are available. */
 yes = 1;
 setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes));
-/* 唯一变化就是这一点了 */
+/* The only change is that. */
 
-/* 设置对方地址和端口信息 */
+/* Set each other 's address and port information */
 s_addr.sin_family = AF_INET;
 if (argv[2])
 s_addr.sin_port = htons(atoi(argv[2]));
@@ -62,11 +62,11 @@ s_addr.sin_port = htons(60000);
 if (argv[1])
 s_addr.sin_addr.s_addr = inet_addr(argv[1]);
 else {
-printf("消息必须有一个接收者！\n");
+printf("The message must have a recipient.！\n");
 exit(0);
 }
 
-/* 发送UDP消息 */
+/* SendUDPMessage */
 addr_len = sizeof(s_addr);
 //strcpy(buff, "hello i'm here");
 //len = sendto(sock, buff, strlen(buff), 0,

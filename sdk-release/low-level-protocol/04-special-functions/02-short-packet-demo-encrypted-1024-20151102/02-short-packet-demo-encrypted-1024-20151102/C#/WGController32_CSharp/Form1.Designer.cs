@@ -43,7 +43,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(234, 23);
             this.button1.TabIndex = 0;
-            this.button1.Text = "1. Test Encrypt Function (加密通信)\r\n";
+            this.button1.Text = "1. Test Encrypt Function (Encrypted communications)\r\n";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -98,7 +98,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(470, 23);
             this.button2.TabIndex = 8;
-            this.button2.Text = "2 1024-Bytes Command (1024字节指令实现 提取记录 上传权限 读取权限)";
+            this.button2.Text = "2 1024-Bytes Command (1024Byte Command Achieved Ripping records Upload Permissions Read Permissions)";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 

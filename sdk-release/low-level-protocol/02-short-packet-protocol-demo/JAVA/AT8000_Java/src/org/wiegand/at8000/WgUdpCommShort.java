@@ -10,12 +10,12 @@ import org.apache.mina.core.service.IoConnector;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioDatagramConnector;
 
-public class WgUdpCommShort { //短报文协议
+public class WgUdpCommShort { //Shortcast agreement
 
-	public static final int  WGPacketSize = 64;             //报文长度
-	public static final byte Type = 0x17; //2015-04-30 08:50:29 0x19;					//类型
-	public static final int  ControllerPort = 60000;        //控制器端口
-	public static final long SpecialFlag = 0x55AAAA55;      //特殊标识 防止误操作
+	public static final int  WGPacketSize = 64;             //Length of submission
+	public static final byte Type = 0x17; //2015-04-30 08:50:29 0x19;					//Type
+	public static final int  ControllerPort = 60000;        //controller port
+	public static final long SpecialFlag = 0x55AAAA55;      //Special identification Prevent mishandling
 
     public static byte[] longToByte(long number) {   
 	     byte[] b = new byte[8];   
@@ -26,8 +26,8 @@ public class WgUdpCommShort { //短报文协议
 	     return b;   
 	    }
 	 
-	 //将带符号的bt转换为不带符号的int类型数据 
-	 public static int getIntByByte(byte bt)  //bt 转换为无符号的int
+	 //Will be markedbtConvert to UnsignedintType Data 
+	 public static int getIntByByte(byte bt)  //bt Convert to Unsignedint
 	{
 	    if (bt <0)
 	    {
@@ -39,8 +39,8 @@ public class WgUdpCommShort { //短报文协议
 	    }
 	}
 	 
-	//从字节转换为 long型数据, 最大长度为8字节 低位在前, 高位在后...
-			//bytlen (1--8), 不在此范围则返回 -1
+	//Convert from byte to longType Data, Maximum length is8Bytes Low in front, High in the back....
+			//bytlen (1--8), Return outside this range -1
 	public static long getLongByByte(byte[] data,int startIndex,int bytlen)
     {
     	long ret =-1;
@@ -57,18 +57,18 @@ public class WgUdpCommShort { //短报文协议
     }
 			
 				
-	public byte	 functionID;		    //功能号
-	public long	 iDevSn;                //设备序列号 4字节
-	public byte[]  data= new byte[56];              //56字节的数据 [含流水号]
+	public byte	 functionID;		    //Function Number
+	public long	 iDevSn;                //Device serial number 4Bytes
+	public byte[]  data= new byte[56];              //56Byte Data [Fluid]
 
 	private static long _Global_xid = 0;
     protected long _xid = 0; //2011-5-12 15:28:37
-    void GetNewXid()  //2011-1-10 14:22:16 获取新的Xid
+    void GetNewXid()  //2011-1-10 14:22:16 Get NewXid
     {
         _Global_xid++;
-        _xid = _Global_xid; //新的值
+        _xid = _Global_xid; //New Value
     }
-    static long getXidOfCommand(byte[] cmd) //获取指令中的xid
+    static long getXidOfCommand(byte[] cmd) //Fetching commandsxid
     {
         long ret = -1;
         if (cmd.length >= WGPacketSize)
@@ -82,14 +82,14 @@ public class WgUdpCommShort { //短报文协议
 		{
 			Reset();
 		}
-		public void Reset()  //数据复位
+		public void Reset()  //Data Reunification
 		{
 			for(int i=0; i<data.length; i++)
 			{
 				data[i] =0;
 			}
 		}
-		public byte[] toByte() //生成64字节指令包
+		public byte[] toByte() //Generate64Bytes package
 		{
 			byte[] buff =new byte[WGPacketSize];
 				for(int i=0; i<data.length; i++)
@@ -118,13 +118,13 @@ public class WgUdpCommShort { //短报文协议
 		connFuture = connector.connect(new InetSocketAddress(ip,	port));
 	}
 	
-	//打开通信连接
+	//Open communication connection
 	public  void CommOpen(String ip)
 	{
-		CommOpen(ip,ControllerPort);  //2013-11-06 14:16:52 默认是60000
+		CommOpen(ip,ControllerPort);  //2013-11-06 14:16:52 Default is60000
 	}
 	
-	//关闭通信连接
+	//Close communication connection
 	public  void CommClose()
 	{
 		IoSession  session = connFuture.getSession();
@@ -135,14 +135,14 @@ public class WgUdpCommShort { //短报文协议
          connector.dispose();
 	}
 	
-	//运行 获取通信数据
-	//失败时, 返回 null, 否则为64字节数据
+	//Run Access to communication data
+	//When failed, Back null, Otherwise64Byte Data
 	public byte[] run()
 	{
 		return getInfo(iDevSn,toByte());
 	}
 	
-	//通过指定sn和command 获取数据
+	//By designationsnandcommand Getting data
     public  byte[] getInfo( long sn, byte[] command) 
     {
 		byte[] bytCommand = command;
@@ -172,7 +172,7 @@ public class WgUdpCommShort { //短报文协议
 			    long endTicks = startTicks + CommTimeoutMsMin; 
 		       if (startTicks > endTicks)
 		       {
-		    	   //System.out.println("超时");
+		    	   //System.out.println("Timeout");
 		    	   try {
 		  				Thread.sleep(30);
 		  			} catch (InterruptedException e) {
@@ -183,7 +183,7 @@ public class WgUdpCommShort { //短报文协议
 		       long startIndex = 0;
 		       while (endTicks > java.util.Calendar.getInstance().getTimeInMillis())
 		       {
-		    	   if (!bSent)  //没有发送过....
+		    	   if (!bSent)  //I didn't send it.....
 		    	   {
 		    		   session = connFuture.getSession();
 		    		   if (session !=null)
@@ -204,16 +204,16 @@ public class WgUdpCommShort { //短报文协议
 		        		{
 		                		bytget= queue.poll();
 		        		}
-		                if ((bytget[0]== bytCommand[0]) //类型一致
-									&& (bytget[1]== bytCommand[1]) //功能号一致
-									&& (xid == getXidOfCommand(bytget)) )  //序列号对应
+		                if ((bytget[0]== bytCommand[0]) //Align type
+									&& (bytget[1]== bytCommand[1]) //Function numbers are consistent
+									&& (xid == getXidOfCommand(bytget)) )  //Serial number corresponding
 					    {
 		                   bSuccess = 1;
 		                   break; // return ret;
 		                }
 		                else
 		                {
-		                	//System.out.printf("无效包 xid=%d\r\n", WgUdpComm.getXidOfCommand(bytget));
+		                	//System.out.printf("Invalid package xid=%d\r\n", WgUdpComm.getXidOfCommand(bytget));
 		                }
 		           }
 		           else
@@ -247,7 +247,7 @@ public class WgUdpCommShort { //短报文协议
 		       }
 		       else
 		       {
-		    	  // System.out.println("重试....");
+		    	  // System.out.println("Try again....");
 		    	session = connFuture.getSession();
 		   		if (session !=null)
 		   		{
@@ -264,12 +264,12 @@ public class WgUdpCommShort { //短报文协议
          
          if (bSuccess > 0)
          {
-      	   //System.out.println("通信 成功");
+      	   //System.out.println("Communications Success");
        	    return  bytget;
          }
          else
          {
-      	  //System.out.println("通信 失败....");
+      	  //System.out.println("Communications Failed....");
          }
          return null;
  	}

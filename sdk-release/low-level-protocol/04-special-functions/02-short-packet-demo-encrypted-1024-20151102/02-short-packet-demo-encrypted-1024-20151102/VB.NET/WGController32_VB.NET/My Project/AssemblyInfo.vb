@@ -2,11 +2,11 @@
 Imports System.Reflection
 Imports System.Runtime.InteropServices
 
-' 有关程序集的常规信息通过下列特性集
-' 控制。更改这些特性值可修改
-' 与程序集关联的信息。
+' General information about the program set is provided by the following features: Set
+' Control。Change these feature values to change
+' Information linked to the program set。
 
-' 查看程序集特性的值
+' View the value of the program set properties
 
 <Assembly: AssemblyTitle("WGController32_VB.NET")> 
 <Assembly: AssemblyDescription("")> 
@@ -17,18 +17,18 @@ Imports System.Runtime.InteropServices
 
 <Assembly: ComVisible(False)>
 
-'如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
+'If this item COM Public，The following GUID For Type Library ID
 <Assembly: Guid("1dca314a-7c57-49d6-a9f3-7bd9e1eb5398")> 
 
-' 程序集的版本信息由下面四个值组成:
+' The version of the set consists of the following four values::
 '
-'      主版本
-'      次版本
-'      内部版本号
-'      修订号
+'      Main Version
+'      Minor
+'      Internal version number
+'      Revision Number
 '
-' 可以指定所有这些值，也可以使用“内部版本号”和“修订号”的默认值，
-' 方法是按如下所示使用“*”:
+' You can specify all these values.，It can also be used“Internal version number”and“Revision Number”Default value，
+' By using the following:“*”:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
 <Assembly: AssemblyVersion("1.0.0.0")> 

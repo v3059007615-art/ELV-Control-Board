@@ -61,7 +61,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(173, 71);
             this.button1.TabIndex = 2;
-            this.button1.Text = "1. Test Basic Function\r\n1.  测试基本功能\r\n    (查询/校时/权限/记录)";
+            this.button1.Text = "1. Test Basic Function\r\n1.  Test Basic Functions\r\n    (Question/At school./Permissions/Records)";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -84,7 +84,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(83, 24);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Controller SN\r\n 控制器序列号";
+            this.label1.Text = "Controller SN\r\n Control serial number";
             // 
             // txtSN
             // 
@@ -107,7 +107,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 24);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Controller IP\r\n控制器IP地址";
+            this.label2.Text = "Controller IP\r\ncontrollerIPAddress";
             // 
             // txtWatchServerPort
             // 
@@ -124,7 +124,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(107, 24);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Watch Server Port\r\n接收服务器端口号";
+            this.label3.Text = "Watch Server Port\r\nReceive server port number";
             // 
             // button2
             // 
@@ -132,7 +132,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(216, 23);
             this.button2.TabIndex = 5;
-            this.button2.Text = "Stop 停止监控或测试";
+            this.button2.Text = "Stop Stop surveillance or testing";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -142,7 +142,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(216, 49);
             this.button3.TabIndex = 3;
-            this.button3.Text = "Search Controller\r\n搜索控制器 修改控制器的IP配置";
+            this.button3.Text = "Search Controller\r\nSearch controller Change controller'sIPConfigure";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -153,7 +153,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(101, 24);
             this.label5.TabIndex = 4;
-            this.label5.Text = "Watch Server IP\r\n接收服务器IP地址";
+            this.label5.Text = "Watch Server IP\r\nReceiving ServersIPAddress";
             // 
             // txtWatchServerIP
             // 
@@ -169,7 +169,7 @@
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(216, 23);
             this.button4.TabIndex = 4;
-            this.button4.Text = "Only Watch 只打开接收服务器";
+            this.button4.Text = "Only Watch Only open receiving server";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -179,7 +179,7 @@
             this.btnGetController.Name = "btnGetController";
             this.btnGetController.Size = new System.Drawing.Size(223, 23);
             this.btnGetController.TabIndex = 0;
-            this.btnGetController.Text = "获取控制器SN和IP  [仅限局域网内]";
+            this.btnGetController.Text = "Get controllerSNandIP  [LAN only]";
             this.btnGetController.UseVisualStyleBackColor = true;
             this.btnGetController.Click += new System.EventHandler(this.btnGetController_Click);
             // 
@@ -189,7 +189,7 @@
             this.btnRemoteOpenDoor1.Name = "btnRemoteOpenDoor1";
             this.btnRemoteOpenDoor1.Size = new System.Drawing.Size(173, 23);
             this.btnRemoteOpenDoor1.TabIndex = 1;
-            this.btnRemoteOpenDoor1.Text = "远程开1号门";
+            this.btnRemoteOpenDoor1.Text = "Remotely open1Door.";
             this.btnRemoteOpenDoor1.UseVisualStyleBackColor = true;
             this.btnRemoteOpenDoor1.Click += new System.EventHandler(this.btnRemoteOpenDoor1_Click);
             // 
@@ -199,7 +199,7 @@
             this.btnQR1.Name = "btnQR1";
             this.btnQR1.Size = new System.Drawing.Size(194, 23);
             this.btnQR1.TabIndex = 8;
-            this.btnQR1.Text = "串口1 模拟1号门进门 透传";
+            this.btnQR1.Text = "Serial1 Simulation1Door in. Passage";
             this.btnQR1.UseVisualStyleBackColor = true;
             this.btnQR1.Click += new System.EventHandler(this.btnQRFunction_Click);
             // 
@@ -209,7 +209,7 @@
             this.btnQR2.Name = "btnQR2";
             this.btnQR2.Size = new System.Drawing.Size(194, 23);
             this.btnQR2.TabIndex = 9;
-            this.btnQR2.Text = "串口2 模拟2号门出门 透传";
+            this.btnQR2.Text = "Serial2 Simulation2Door No. Passage";
             this.btnQR2.UseVisualStyleBackColor = true;
             this.btnQR2.Click += new System.EventHandler(this.btnQRFunction_Click);
             // 
@@ -234,7 +234,7 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(264, 121);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "QR 二维码";
+            this.tabPage1.Text = "QR Two-dimensional code.";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // label4
@@ -244,7 +244,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(125, 12);
             this.label4.TabIndex = 11;
-            this.label4.Text = "以双门双向控制器为例";
+            this.label4.Text = "Take two-door two-way controller, for example.";
             // 
             // btnQRRestore
             // 
@@ -252,7 +252,7 @@
             this.btnQRRestore.Name = "btnQRRestore";
             this.btnQRRestore.Size = new System.Drawing.Size(194, 23);
             this.btnQRRestore.TabIndex = 10;
-            this.btnQRRestore.Text = "取消全部串口";
+            this.btnQRRestore.Text = "Unstring All";
             this.btnQRRestore.UseVisualStyleBackColor = true;
             this.btnQRRestore.Click += new System.EventHandler(this.btnQRFunction_Click);
             // 
@@ -272,7 +272,7 @@
             this.btnGetDriverVersion.Name = "btnGetDriverVersion";
             this.btnGetDriverVersion.Size = new System.Drawing.Size(173, 23);
             this.btnGetDriverVersion.TabIndex = 11;
-            this.btnGetDriverVersion.Text = "获取控制器 驱动版本";
+            this.btnGetDriverVersion.Text = "Get controller Driver Version";
             this.btnGetDriverVersion.UseVisualStyleBackColor = true;
             this.btnGetDriverVersion.Click += new System.EventHandler(this.btnGetDriverVersion_Click);
             // 

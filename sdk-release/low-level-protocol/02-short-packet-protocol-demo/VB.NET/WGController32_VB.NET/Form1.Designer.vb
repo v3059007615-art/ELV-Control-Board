@@ -2,7 +2,7 @@
 Partial Class Form1
     Inherits System.Windows.Forms.Form
 
-    'Form 重写 Dispose，以清理组件列表。
+    'Form Rewrite Dispose，To clear the list of components。
     <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
@@ -14,12 +14,12 @@ Partial Class Form1
         End Try
     End Sub
 
-    'Windows 窗体设计器所必需的
+    'Windows Form designer required
     Private components As System.ComponentModel.IContainer
 
-    '注意: 以下过程是 Windows 窗体设计器所必需的
-    '可以使用 Windows 窗体设计器修改它。
-    '不要使用代码编辑器修改它。
+    'Attention.: The following process Windows Form designer required
+    'Available Windows The form designer modified it.。
+    'Do not modify it with the code editor。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.button3 = New System.Windows.Forms.Button()

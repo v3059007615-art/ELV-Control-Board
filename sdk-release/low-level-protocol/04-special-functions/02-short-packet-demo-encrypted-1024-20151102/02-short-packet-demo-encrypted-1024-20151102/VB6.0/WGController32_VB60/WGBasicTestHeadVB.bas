@@ -1,14 +1,14 @@
 Attribute VB_Name = "Module1"
-'2014-09-20 18:43:19 新建WG VB案例
-'考虑延时所要调用的函数 , 同时可用于计时功能
+'2014-09-20 18:43:19 NewWG VBCases
+'Functions to be called to consider delay , It's also available for timing.
 Public Declare Function GetTickCount Lib "kernel32" () As Long
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
-'2015-11-02 14:38:02 增加 短报文通信密码
-Public Declare Function ShortEncrypt Lib "n3kWGCom.dll" (ByVal ptrCommand As Long, ByVal ptrPassword As Long) As Long '加密
-Public Declare Function ShortDecrypt Lib "n3kWGCom.dll" (ByVal ptrCommand As Long, ByVal ptrPassword As Long) As Long '解密
+'2015-11-02 14:38:02 Increase Fax code
+Public Declare Function ShortEncrypt Lib "n3kWGCom.dll" (ByVal ptrCommand As Long, ByVal ptrPassword As Long) As Long 'Encryption
+Public Declare Function ShortDecrypt Lib "n3kWGCom.dll" (ByVal ptrCommand As Long, ByVal ptrPassword As Long) As Long 'Decrypt
 
-'Sub timeDelay(ByVal DTms As Long)   '以ms为单位
+'Sub timeDelay(ByVal DTms As Long)   'Here.msUnit
 '    Dim T As Long
 '    T = GetTickCount()
 '    Do
@@ -17,7 +17,7 @@ Public Declare Function ShortDecrypt Lib "n3kWGCom.dll" (ByVal ptrCommand As Lon
 'End Sub
 
 
-'数组复位为0
+'Other Organiser0
 Public Function arrayReset(ByRef arrbyte() As Byte, ByVal length As Integer) As Integer
     Dim i As Integer
     For i = 0 To length - 1
@@ -26,7 +26,7 @@ Public Function arrayReset(ByRef arrbyte() As Byte, ByVal length As Integer) As 
     arrayReset = 1
 End Function
 
-'整形转成字节 (4字节)
+'Integer to Bytes (4Bytes)
 Public Function IntToByte(ByVal value As Long, ByRef arrbyte() As Byte, ByVal start As Integer, ByVal length As Integer)
     Dim i As Integer
     Dim val As Long
@@ -44,7 +44,7 @@ Public Function IntToByte(ByVal value As Long, ByRef arrbyte() As Byte, ByVal st
     IntToByte = 1
 End Function
 
-'整形转成字节 (8字节)
+'Integer to Bytes (8Bytes)
 Public Function DoubleToByte(ByVal value As Double, ByRef arrbyte() As Byte, ByVal start As Integer, ByVal length As Integer)
     Dim i As Integer
     Dim val As Double
@@ -62,7 +62,7 @@ Public Function DoubleToByte(ByVal value As Double, ByRef arrbyte() As Byte, ByV
     DoubleToByte = 1
 End Function
 
-'字节转成整形(4字节)
+'Byte to Integer(4Bytes)
 Public Function ByteToLong(ByRef arrbyte() As Byte, ByVal start As Integer, ByVal length As Integer) As Long
     Dim i As Integer
     Dim val As Long
@@ -76,7 +76,7 @@ Public Function ByteToLong(ByRef arrbyte() As Byte, ByVal start As Integer, ByVa
     ByteToLong = val
 End Function
 
-'字节转成整形(8字节)
+'Byte to Integer(8Bytes)
 Public Function ByteToDouble(ByRef arrbyte() As Byte, ByVal start As Integer, ByVal length As Integer) As Double
     Dim i As Integer
     Dim val As Double
@@ -90,33 +90,33 @@ Public Function ByteToDouble(ByRef arrbyte() As Byte, ByVal start As Integer, By
     ByteToDouble = val
 End Function
 
-Public Function GetFromBCD(ByVal val As Integer) As Byte '获取Hex值, 主要用于日期时间格式
+Public Function GetFromBCD(ByVal val As Integer) As Byte 'AccessHexValue, Mainly used in date time format
     GetFromBCD = ((val - (val Mod 16)) / 16) * 10 + (val Mod 16)
 End Function
 
 
-'将控制器时间格式转换为WINDOWS 长时间格式
+'Convert controller time format toWINDOWS Long Format
 Public Function getMsDate(ByVal yearH, ByVal yearL, ByVal month, ByVal day, ByVal hour, ByVal minute, ByVal second) As Date
     Dim i As Long, strTime As String
     i = GetFromBCD(yearH)
     i = i * 100
     i = i + GetFromBCD(yearL)
-    strTime = Trim(Str$(i)) & "-"    '年
+    strTime = Trim(Str$(i)) & "-"    'Year
     i = GetFromBCD(month)
-    strTime = strTime & Trim(Str$(i)) & "-"       '月
+    strTime = strTime & Trim(Str$(i)) & "-"       'Month
     i = GetFromBCD(day)
-    strTime = strTime & Trim(Str$(i)) & " "       '日
+    strTime = strTime & Trim(Str$(i)) & " "       'Day
     i = GetFromBCD(hour)
-    strTime = strTime & Trim(Str$(i)) & ":"       '时
+    strTime = strTime & Trim(Str$(i)) & ":"       'Time
     i = GetFromBCD(minute)
-    strTime = strTime & Trim(Str$(i)) & ":"       '分
+    strTime = strTime & Trim(Str$(i)) & ":"       'min
     i = GetFromBCD(second)
-    strTime = strTime & Trim(Str$(i))        '秒
-    If Not IsDate(strTime) Then strTime = "2000-1-1 0:0:0" '如果不是时间格式,则按缺省2000年1月1日 0时0分0秒 赋值
+    strTime = strTime & Trim(Str$(i))        'sec
+    If Not IsDate(strTime) Then strTime = "2000-1-1 0:0:0" 'If not time format,By default2000Year1Month1Day 0Time0min0sec Granted
     getMsDate = strTime
 End Function
 
-'获取BCD值, 主要用于日期时间格式
+'AccessBCDValue, Mainly used in date time format
 Public Function GetHex(ByVal val As Integer) As Byte
     GetHex = ((val Mod 10) + (((val - (val Mod 10)) / 10) Mod 10) * 16)
 End Function

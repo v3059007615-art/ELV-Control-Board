@@ -1,13 +1,13 @@
 /**
-* $Id: 2015-08-24 15:49:39 Karl CSN 陈绍宁 $
+* $Id: 2015-08-24 15:49:39 Karl CSN Chan Shonin $
 *
-* 门禁控制器 短报文协议 测试案例(只适用于V6.56或以上版本)
-* V1.0 版本  2015-08-24 15:50:17
-*            基本功能:     远程开门
-*            系统要求: android版本为2.3.1或以上
-*            权限要求: 要在 AndroidMainfest.xml中增加如下权限
+* Doorbar controller Shortcast agreement Test cases(Only forV6.56Or above)
+* V1.0 Version  2015-08-24 15:50:17
+*            Basic functions:     Open remote
+*            System requirements: androidVersion as2.3.1or above
+*            Competence requirements: Yes. AndroidMainfest.xmlwith the following authority:
 *                <uses-permission android:name="android.permission.INTERNET"></uses-permission> 
-*            案例控制器: 驱动V6.56或以上; IP设为 192.168.168.123; 电脑IP在同一网段.
+*            Case controller: DriverV6.56or above; IPSet as 192.168.168.123; ComputerIPIn the same section.
 *
 *            
 */
