@@ -1,32 +1,32 @@
 ﻿/**
-* WGController32 2015-04-30 17:40:43 karl CSN 陈绍宁 $
+* WGController32 2015-04-30 17:40:43 karl CSN Chan Shonin $
 *
-* 门禁控制器 短报文协议 测试案例
-* V2.7 版本  2015-12-05 17:18:00 V6.62驱动版本 增加 通信SM4通信密码测试
-* V2.6 版本  2015-11-03 20:25:53 V6.60驱动版本 增加 通信密码测试, 1024字节用于权限上传和记录提取操作  
-*                               修改通信的重试操作
+* Doorbar controller Shortcast agreement Test cases
+* V2.7 Version  2015-12-05 17:18:00 V6.62Driver Version Increase CommunicationsSM4Communications password testing
+* V2.6 Version  2015-11-03 20:25:53 V6.60Driver Version Increase Communications password testing, 1024Bytes for permission upload and log extraction operations  
+*                               Retry to modify communication
 *                               
-* V2.5 版本  2015-04-29 20:41:30 采用 V6.56驱动版本 型号由0x19改为0x17
-*            基本功能:  查询控制器状态
-*                       读取日期时间
-*                       设置日期时间
-*                       获取指定索引号的记录
-*                       设置已读取过的记录索引号
-*                       获取已读取过的记录索引号
-*                       远程开门
-*                       权限添加或修改
-*                       权限删除(单个删除)
-*                       权限清空(全部清掉)
-*                       权限总数读取
-*                       权限查询
-*                       设置门控制参数(在线/延时)
-*                       读取门控制参数(在线/延时)
+* V2.5 Version  2015-04-29 20:41:30 Adopt V6.56Driver Version Model by0x19For0x17
+*            Basic functions:  Query controller status
+*                       Read Date Time
+*                       Set Date Time
+*                       Get a record of the given index number
+*                       Set a read record index number
+*                       Get read record index numbers
+*                       Open remote
+*                       Permissions to add or modify
+*                       Permission to delete(Individual Delete)
+*                       Clear Permissions(Clear it all.)
+*                       Total Permissions Read
+*                       Permission Query
+*                       Set door control parameters(Online/Delay)
+*                       Read door control parameters(Online/Delay)
 
-*                       设置接收服务器的IP和端口
-*                       读取接收服务器的IP和端口
+*                       Set up the receiver serverIPand Port
+*                       Read the receiver server.IPand Port
 *
 *
-*                       接收服务器的实现 (在61005端口接收数据) -- 此项功能 一定要注意防火墙设置 必须是允许接收数据的.
+*                       Receiving server realization (Yes.61005Port Reception Data) -- This function Be careful with the firewall. It has to be allowed to receive data..
 */
 
 using System;
@@ -55,16 +55,16 @@ namespace WGController32_CSharp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //'    '本案例未作搜索控制器  及 设置IP的工作  (直接由IP设置工具来完成)
-            //'    '本案例中测试说明
-            //'    '控制器SN  = 229999901
-            //'    '控制器IP  = 192.168.168.123
-            //'    '电脑  IP  = 192.168.168.101
-            //'    '用于作为接收服务器的IP (本电脑IP 192.168.168.101), 接收服务器端口 (61005)
+            //'    'No search controller in this case  and SettingsIPWork  (Directly byIPSet tools to complete)
+            //'    'Test instructions in this case
+            //'    'controllerSN  = 229999901
+            //'    'controllerIP  = 192.168.168.123
+            //'    'Computer  IP  = 192.168.168.101
+            //'    'For receiving serverIP (This computer.IP 192.168.168.101), Receive Server Port (61005)
 
-            //基本功能测试
-            //txtSN.Text 控制器9位数的序列SN
-            //txtIP.Text 控制器IP地址, 缺省采用192.168.168.123  [可以采用 Search Controller 修改控制器IP]
+            //Basic function test
+            //txtSN.Text controller9Series of bitsSN
+            //txtIP.Text controllerIPAddress, Not adopted192.168.168.123  [Available Search Controller Modify controllerIP]
   
             //txtIP.Text = "10.0.1.123";// txtIP.Text;
             //txtSN.Text = "239999901"; // long.Parse(txtSN.Text);
@@ -74,57 +74,57 @@ namespace WGController32_CSharp
             long controllerSN = long.Parse(txtSN.Text);
 
 
-            log("SM4 ECB 通信 测试...");
+            log("SM4 ECB Communications Test...");
 
             int ret = 0;
-            int success = 0;  //0 失败, 1表示成功
+            int success = 0;  //0 Failed, 1It means success.
 
 
-            //创建短报文 pkt
+            //Create short message pkt
             WGPacketShort pkt = new WGPacketShort();
             pkt.iDevSn = controllerSN;
             pkt.IP = ControllerIP;
-            byte[] commPassword = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 }; //16字节密码
+            byte[] commPassword = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 }; //16Byte Password
 
 
-            //设置通信密码 SM4 ECB[功能号: 0xE0] **********************************************************************************
+            //Set Communications Password SM4 ECB[Function Number: 0xE0] **********************************************************************************
             pkt.Reset();
             pkt.functionID = 0xE0;
-            //防止误操作标识
+            //Ideas against error
             Array.Copy(System.BitConverter.GetBytes(WGPacketShort.SpecialFlag), 0, pkt.data, 0, 4);
-            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00设置新密码
+            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00Set New Password
             {
                 pkt.data[4 + i] = commPassword[i];
                 pkt.data[36 + i] = commPassword[i];
             }
 
-            //分两种情况: 密码为空  或者 已设置过密码
-            ret = pkt.run();  //2015-11-02 10:21:22 先尝试控制器没有密码的操作
+            //In two cases.: Password is empty  Or... Password set
+            ret = pkt.run();  //2015-11-02 10:21:22 Try the controller without password first.
             success = 0;
             if (ret > 0)
             {
                 if (pkt.recv[8] == 1)
                 {
-                    log("通信密码设置成功...");
+                    log("Communication password set successfully...");
                     success = 1;
                 }
             }
             if (success == 0)
             {
-                ret = pkt.run_ECB(commPassword);  //2015-11-02 10:21:22 再尝试控制器已有密码的操作
+                ret = pkt.run_ECB(commPassword);  //2015-11-02 10:21:22 Try the password operation for the controller.
                 if ((ret > 0) && (pkt.recv[8] == 1))
                 {
-                    log("通信密码设置成功...[通过加密通信操作]");
+                    log("Communication password set successfully...[Can not open message]");
                     success = 1;
                 }
                 else
                 {
-                    log("通信密码设置失败...[通过加密通信操作]");
+                    log("Communication password setup failed...[Can not open message]");
                 }
             }
 
-            //采用通信密码通信
-            //1.10	远程开门[功能号: 0x40] **********************************************************************************
+            //Communication using coded communications
+            //1.10	Open remote[Function Number: 0x40] **********************************************************************************
             int doorNO = 1;
             pkt.Reset();
             pkt.functionID = 0x40;
@@ -135,38 +135,38 @@ namespace WGController32_CSharp
             {
                 if (pkt.recv[8] == 1)
                 {
-                    //有效开门.....
-                    log("1.10 远程开门	 成功...[通过加密通信操作]");
+                    //Open the door effectively......
+                    log("1.10 Open remote	 Success...[Can not open message]");
                     success = 1;
                 }
                 else
                 {
-                    log("1.10 远程开门	 失败...[通过加密通信操作]");
+                    log("1.10 Open remote	 Failed...[Can not open message]");
                 }
             }
             else
             {
-                log("1.10 远程开门	 失败...[通过加密通信操作]");
+                log("1.10 Open remote	 Failed...[Can not open message]");
             }
 
-            //演示1024字节 加密操作...
+            //Presentation1024Bytes Encryption Operations...
             byte[] command1024 = new byte[1024];
 
 
-            //1.9	提取记录操作
-            //1. 通过 0xB0指令 获取最早一条记录索引
-            //2. 通过 0xB0指令 获取最后一条记录索引
-            //3. 通过 0xB4指令 获取已读取过的记录索引号 recordIndex
-            //4. 通过 0xB0指令 获取指定索引号的记录  从recordIndex + 1开始提取记录， 直到记录为空为止
-            //5. 通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
-            //经过上面步骤， 整个提取记录的操作完成
-            long firstRecordIndex = 0;  //第一条记录索引号
-            long lastRecordIndex = 0;   //最后一条记录索引号
+            //1.9	Extract Record Operation
+            //1. Pass. 0xB0Command Fetch the earliest record index
+            //2. Pass. 0xB0Command Get Last Record Index
+            //3. Pass. 0xB4Command Get read record index numbers recordIndex
+            //4. Pass. 0xB0Command Get a record of the given index number  FromrecordIndex + 1Start extracting records， Until the records are empty.
+            //5. Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
+            //After the top steps,， The entire extraction record is complete.
+            long firstRecordIndex = 0;  //First record index number
+            long lastRecordIndex = 0;   //Last record index number.
             long recordIndexGotToRead = 0x0;
             long recordIndexToGet = 0;
-            log("1.9 提取记录操作	 开始...[1024字节指令]");
+            log("1.9 Extract Record Operation	 Start...[1024Byte Command]");
             pkt.Reset();
-            pkt.functionID = 0xB0;//取最早的一条记录索引
+            pkt.functionID = 0xB0;//Take the earliest record index
             recordIndexToGet = 0x0;
             LongToBytes(ref pkt.data, 0, recordIndexToGet);
             ret = pkt.run_ECB(commPassword);
@@ -174,12 +174,12 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 firstRecordIndex = (int)byteToLong(pkt.recv, 8, 4);
-                log(" 获取最早一条记录索引	 =" + firstRecordIndex.ToString());
+                log(" Fetch the earliest record index	 =" + firstRecordIndex.ToString());
             }
             if (ret > 0)
             {
                 pkt.Reset();
-                pkt.functionID = 0xB0;//取最后的一条记录索引
+                pkt.functionID = 0xB0;//Take Last Record Index
                 recordIndexToGet = 0xffffffff;
                 LongToBytes(ref pkt.data, 0, recordIndexToGet);
                 ret = pkt.run_ECB(commPassword);
@@ -187,13 +187,13 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 lastRecordIndex = (int)byteToLong(pkt.recv, 8, 4);
-                log(" 获取最后一条记录索引	  =" + lastRecordIndex.ToString());
+                log(" Get Last Record Index	  =" + lastRecordIndex.ToString());
             }
 
             if (ret > 0)
             {
                 pkt.Reset();
-                pkt.functionID = 0xB4;//获取已读取过的记录索引号
+                pkt.functionID = 0xB4;//Get read record index numbers
                 recordIndexToGet = 0x0;
                 LongToBytes(ref pkt.data, 0, recordIndexToGet);
                 ret = pkt.run_ECB(commPassword);
@@ -201,16 +201,16 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 recordIndexGotToRead = (int)byteToLong(pkt.recv, 8, 4);
-                log("获取已读取过的记录索引号	  =" + recordIndexGotToRead.ToString());
+                log("Get read record index numbers	  =" + recordIndexGotToRead.ToString());
             }
             long validRecordsCount = 0;
-            //recordIndexGotToRead = 0;  //2015-11-05 21:31:05 强制取所有记录
+            //recordIndexGotToRead = 0;  //2015-11-05 21:31:05 Force all records
             if (ret > 0)
             {
                 long recordIndexValidGet = 0;
 
-                long recordIndexToGetStart = recordIndexGotToRead + 1;  //准备要提取的记录索引位
-                if (recordIndexGotToRead > lastRecordIndex || recordIndexGotToRead < firstRecordIndex) //超过范围 取第一个记录的索引号
+                long recordIndexToGetStart = recordIndexGotToRead + 1;  //Prepare record index to extract
+                if (recordIndexGotToRead > lastRecordIndex || recordIndexGotToRead < firstRecordIndex) //Beyond range Take index number for the first record
                 {
                     recordIndexToGetStart = firstRecordIndex;
                 }
@@ -224,7 +224,7 @@ namespace WGController32_CSharp
                 {
                     for (int j = 0; j < 1024; j++)
                     {
-                        command1024[j] = 0; //复位
+                        command1024[j] = 0; //Restore
                     }
                     recordIndexCurrent = recordIndexToGetStart;
                     for (int j = 0; j < 1024; j = j + 64)
@@ -243,21 +243,21 @@ namespace WGController32_CSharp
                         {
                             success = 0;
 
-                            //12	记录类型
-                            //0=无记录
-                            //1=刷卡记录
-                            //2=门磁,按钮, 设备启动, 远程开门记录
-                            //3=报警记录	1	
-                            //0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+                            //12	Record type
+                            //0=No record
+                            //1=Brush Card Record
+                            //2=Door Magnetic,button, Device startup, Remote Open Record
+                            //3=Call the police.	1	
+                            //0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
                             byte[] recv = new byte[64];
                             Array.Copy(pkt.recv, j, recv, 0, 64);
                             int recordType = recv[12];
                             if (recordType == 0)
                             {
                                 success = 2;
-                                break; //没有更多记录
+                                break; //No more records.
                             }
-                            if (recordType == 0xff)//此索引号无效
+                            if (recordType == 0xff)//This index number is invalid
                             {
                                 success = 0;
                                 break;
@@ -267,23 +267,23 @@ namespace WGController32_CSharp
                             recordIndexCurrent++;
                             validRecordsCount++;
                             //
-                            if (validRecordsCount < 100) //2015-11-05 14:59:20显示前100个, 太多显示处理速度慢 不作分析了...
+                            if (validRecordsCount < 100) //2015-11-05 14:59:20Show Before100individual, Too much shows slow processing. No analysis....
                             {
                                 displayRecordInformation(recv); //2015-06-09 20:01:21
                                 if (validRecordsCount == 99)
                                 {
-                                    log(" 为加快提取速度, 超过100个的  不再显示记录信息.......");
+                                    log(" To speed up extraction, Over100Shit.  Do not display recording information again.......");
                                     Application.DoEvents();
                                 }
                             }
-                            //.......对收到的记录作存储处理
+                            //.......Storage of records received
                             //*****
                             //###############
                         }
                     }
                     else
                     {
-                        //提取失败
+                        //Ripping failed
                         break;
                     }
                     if (success != 1)
@@ -292,15 +292,15 @@ namespace WGController32_CSharp
                     }
                 } while (cnt < 200000);
 
-                log("1.9 完全提取成功	 ... 有效记录数= " + validRecordsCount.ToString());
+                log("1.9 Full extraction successful.	 ... Number of valid records= " + validRecordsCount.ToString());
                 if ((success > 0) && validRecordsCount > 0)
                 {
-                    //通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+                    //Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
                     pkt.Reset();
                     pkt.functionID = 0xB2;
                     LongToBytes(ref pkt.data, 0, recordIndexValidGet);
 
-                    //12	标识(防止误设置)	1	0x55 [固定]
+                    //12	Identification(Prevent Error Settings)	1	0x55 [Fixed]
                     LongToBytes(ref pkt.data, 4, WGPacketShort.SpecialFlag);
 
                     ret = pkt.run_ECB(commPassword);
@@ -309,8 +309,8 @@ namespace WGController32_CSharp
                     {
                         if (pkt.recv[8] == 1)
                         {
-                            //完全提取成功....
-                            log("1.9 完全提取成功	 成功...");
+                            //Full extraction successful.....
+                            log("1.9 Full extraction successful.	 Success...");
                             success = 1;
                         }
                     }
@@ -319,16 +319,16 @@ namespace WGController32_CSharp
             }
 
 
-            //1.21	权限按从小到大顺序添加[功能号: 0x56] 适用于权限数过1000, 少于8万 **********************************************************************************
-            //此功能实现 完全更新全部权限, 用户不用清空之前的权限. 只是将上传的权限顺序从第1个依次到最后一个上传完成. 如果中途中断的话, 仍以原权限为主
-            //建议权限数更新超过50个, 即可使用此指令
-            //如果权限数超过8万时, 中途中断的话, 权限会为空. 所以要上传完整
+            //1.21	Permissions added from childhood to larger[Function Number: 0x56] Applies to privileges1000, Less810,000 **********************************************************************************
+            //This feature achieves Fully update all permissions, User does not have to empty permissions before. Just order the upload permissions from the first1In turn to last upload complete. If you interrupt., Still with the original authority.
+            //Suggested number of privileges updated over50individual, Use this command
+            //If the number of privileges exceeds8As soon as possible., If you interrupt., Permissions will be empty. That's why we have to upload the whole thing.
 
-            log("1.21	权限按从小到大顺序添加[功能号: 0x56]	开始...[采用1024字节指令, 每次上传16个权限]");
+            log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	Start...[Adopt1024Byte Command, Every upload16Permissions]");
 
-            //以10000个卡号为例, 此处简化的排序, 直接是以50001开始的10000个卡. 用户按照需要将要上传的卡号排序存放
-            int cardCount = 1 * 10000; // 10000;  //2015-06-09 20:20:20 卡总数量
-            log(string.Format("       {0}万条权限...", cardCount / 10000));
+            //Here.10000A card number is an example., Simplicit Sorting Here, Directly by50001Started.10000A card.. Store according to the number of card to be uploaded as required
+            int cardCount = 1 * 10000; // 10000;  //2015-06-09 20:20:20 Total number of cards
+            log(string.Format("       {0}Thousand powers...", cardCount / 10000));
             long[] cardArray = new long[cardCount];
             for (int i = 0; i < cardCount; i++)
             {
@@ -340,7 +340,7 @@ namespace WGController32_CSharp
             {
                 for (int j = 0; j < 1024; j++)
                 {
-                    command1024[j] = 0; //复位
+                    command1024[j] = 0; //Restore
                 }
 
                 for (int j = 0; j < 1024; j = j + 64)
@@ -356,28 +356,28 @@ namespace WGController32_CSharp
                     cardNOOfPrivilegeToGetlast = cardNOOfPrivilege;
                     LongToBytes(ref pkt.data, 0, cardNOOfPrivilege);
 
-                    //其他参数简化时 统一, 可以依据每个卡的不同进行修改
-                    //20 10 01 01 起始日期:  2010年01月01日   (必须大于2001年)
+                    //When other parameters are simplified Harmonization, You can make changes depending on each card.
+                    //20 10 01 01 Start date:  2010Year01Month01Day   (Must be greater than2001Year)
                     pkt.data[4] = 0x20;
                     pkt.data[5] = 0x10;
                     pkt.data[6] = 0x01;
                     pkt.data[7] = 0x01;
-                    //20 29 12 31 截止日期:  2029年12月31日
+                    //20 29 12 31 Deadline:  2029Year12Month31Day
                     pkt.data[8] = 0x20;
                     pkt.data[9] = 0x29;
                     pkt.data[10] = 0x12;
                     pkt.data[11] = 0x31;
-                    //01 允许通过 一号门 [对单门, 双门, 四门控制器有效] 
+                    //01 Allow Pass Door one. [Single door., Double door., Four controllers working.] 
                     pkt.data[12] = 0x01;
-                    //01 允许通过 二号门 [对双门, 四门控制器有效]
-                    pkt.data[13] = 0x01;  //如果禁止2号门, 则只要设为 0x00
-                    //01 允许通过 三号门 [对四门控制器有效]
+                    //01 Allow Pass Door two. [Two doors., Four controllers working.]
+                    pkt.data[13] = 0x01;  //If it's forbidden,2Door., As 0x00
+                    //01 Allow Pass Gate three. [It works on four controllers.]
                     pkt.data[14] = 0x01;
-                    //01 允许通过 四号门 [对四门控制器有效]
+                    //01 Allow Pass Gate four. [It works on four controllers.]
                     pkt.data[15] = 0x01;
 
-                    LongToBytes(ref pkt.data, 32 - 8, cardCount); //总的权限数
-                    LongToBytes(ref pkt.data, 35 - 8, i + 1);//当前权限的索引位(从1开始)
+                    LongToBytes(ref pkt.data, 32 - 8, cardCount); //Total permissions
+                    LongToBytes(ref pkt.data, 35 - 8, i + 1);//The index place for the current permission(From1Start)
 
                     byte[] cmd = pkt.toByte();
                     Array.Copy(cmd, 0, command1024, j, 64);
@@ -394,7 +394,7 @@ namespace WGController32_CSharp
                     }
                     if (pkt.recv[8] == 0xE1)
                     {
-                        log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 =0xE1 表示卡号没有从小到大排序...???");
+                        log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 =0xE1 Which means the card number has not been sorted from a small to a large size....???");
                         success = 0;
                         break;
                     }
@@ -406,41 +406,41 @@ namespace WGController32_CSharp
             }
             if (success == 1)
             {
-                log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 成功...");
+                log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 Success...");
             }
             else
             {
-                log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 失败...????");
+                log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 Failed...????");
             }
 
             //long cardNOOfPrivilegeToGetlast = 0;
 
-            //1.16  获取指定索引号的权限[功能号: 0x5C] **********************************************************************************
-            //读取所有权限
+            //1.16  Access to specified index numbers[Function Number: 0x5C] **********************************************************************************
+            //Read All Permissions
             pkt.Reset();
             pkt.functionID = 0x5C;
             pkt.iDevSn = controllerSN;
             long maxCount = 20 * 10000;
             long[] cardArrayGet = new long[maxCount];
-            long QueryIndex = 1; //索引号(从1开始);
+            long QueryIndex = 1; //Index number(From1Start);
             LongToBytes(ref pkt.data, 0, QueryIndex);
 
             for (int i = 0; i < maxCount; i++)
             {
                 cardArrayGet[i] = 0;
             }
-            log("读取所有权限	 开始...[1024字节指令]");
+            log("Read All Permissions	 Start...[1024Byte Command]");
             long iCount = 0;
             for (int i = 0; i < maxCount; i++)
             {
                 for (int j = 0; j < 1024; j++)
                 {
-                    command1024[j] = 0; //复位
+                    command1024[j] = 0; //Restore
                 }
                 for (int j = 0; j < 1024; j = j + 64)
                 {
                     LongToBytes(ref pkt.data, 0, QueryIndex);
-                    QueryIndex++; //索引号(从1开始);
+                    QueryIndex++; //Index number(From1Start);
                     byte[] cmd = pkt.toByte();
                     Array.Copy(cmd, 0, command1024, j, 64);
 
@@ -454,23 +454,23 @@ namespace WGController32_CSharp
                         success = 0;
                         long cardNOOfPrivilegeToGet = 0;
                         cardNOOfPrivilegeToGet = byteToLong(pkt.recv, 8 + j, 4);
-                        if (4294967295 == cardNOOfPrivilegeToGet) //FFFFFFFF对应于4294967295
+                        if (4294967295 == cardNOOfPrivilegeToGet) //FFFFFFFFResponse4294967295
                         {
                             success = 1;
-                            //log("1.16      没有权限信息: (权限已删除)");
+                            //log("1.16      Can not open message: (Permissions deleted)");
                             //break;
                         }
                         else if (cardNOOfPrivilegeToGet == 0)
                         {
-                            //没有权限时: (卡号部分为0)
-                            //log("1.16       没有权限信息: (卡号部分为0)--此索引号之后没有权限了");
+                            //When no permission: (The card number is0)
+                            //log("1.16       Can not open message: (The card number is0)--This index number is no longer valid.");
                             break;
                         }
                         else
                         {
-                            //具体权限信息...
-                            //  log("1.16      有权限信息...");
-                            // log("1.16 获取指定索引号的权限	 成功...");
+                            //Specific Permission Information...
+                            //  log("1.16      Can not open message...");
+                            // log("1.16 Access to specified index numbers	 Success...");
                             cardArrayGet[iCount] = cardNOOfPrivilegeToGet;
                             iCount++;
                             success = 1;
@@ -485,19 +485,19 @@ namespace WGController32_CSharp
                 }
                 else
                 {
-                    log("1.16     有问题..." + ret.ToString());
+                    log("1.16     Problem...." + ret.ToString());
                     break;
                 }
             }
-            log("最后读取到的权限的卡号 = " + cardNOOfPrivilegeToGetlast.ToString());
-            log("提取到的权限数iCount = " + iCount.ToString());  //2015-11-04 19:59:50 提取权限数
+            log("Last read permission card number = " + cardNOOfPrivilegeToGetlast.ToString());
+            log("Permissions extractediCount = " + iCount.ToString());  //2015-11-04 19:59:50 Extract permissions
 
-            //清空通信密码[功能号: 0xE0] **********************************************************************************
+            //Clear the code.[Function Number: 0xE0] **********************************************************************************
             pkt.Reset();
             pkt.functionID = 0xE0;
-            //防止误操作标识
+            //Ideas against error
             Array.Copy(System.BitConverter.GetBytes(WGPacketShort.SpecialFlag), 0, pkt.data, 0, 4);
-            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00 清空密码
+            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00 Empty Password
             {
                 pkt.data[4 + i] = 0;
                 pkt.data[36 + i] = 0;
@@ -506,20 +506,20 @@ namespace WGController32_CSharp
             ret = pkt.run_ECB(commPassword);
             if ((ret > 0) && (pkt.recv[8] == 1))
             {
-                log("通信密码清空成功...[通过加密通信操作]");
+                log("Communication code emptied....[Can not open message]");
                 success = 1;
             }
             else
             {
-                log("通信密码清空失败...[通过加密通信操作]");
+                log("Communication password emptied...[Can not open message]");
             }
 
 
 
             // **********************************************************************************
 
-            //结束  **********************************************************************************
-            pkt.close();  //关闭通信
+            //End  **********************************************************************************
+            pkt.close();  //Close communications
            // return success;
 
 
@@ -527,37 +527,37 @@ namespace WGController32_CSharp
 
 
          /// <summary>
-        /// 短报文
+        /// Shortcasts
         /// </summary>
         class WGPacketShort
         {
-            public  const int WGPacketSize = 64;			    //报文长度
-            //2015-04-29 22:22:41 const static unsigned char	 Type = 0x19;					//类型
-            public  const int Type = 0x17;		//2015-04-29 22:22:50			//类型
-            public  const int ControllerPort = 60000;        //控制器端口
-            public  const long SpecialFlag = 0x55AAAA55;     //特殊标识 防止误操作
+            public  const int WGPacketSize = 64;			    //Length of submission
+            //2015-04-29 22:22:41 const static unsigned char	 Type = 0x19;					//Type
+            public  const int Type = 0x17;		//2015-04-29 22:22:50			//Type
+            public  const int ControllerPort = 60000;        //controller port
+            public  const long SpecialFlag = 0x55AAAA55;     //Special identification Prevent mishandling
 
-            public int functionID;		                     //功能号
-            public long iDevSn;                              //设备序列号 4字节, 9位数
-            public string IP;                                //控制器的IP地址
+            public int functionID;		                     //Function Number
+            public long iDevSn;                              //Device serial number 4Bytes, 9Digits
+            public string IP;                                //The controller.IPAddress
 
-            public byte[] data = new byte[56];               //56字节的数据 [含流水号]
-            //public byte[] recv = new byte[WGPacketSize];     //接收到的数据
-            public byte[] recv = new byte[1024]; //WGPacketSize];     //接收到的数据
+            public byte[] data = new byte[56];               //56Byte Data [Fluid]
+            //public byte[] recv = new byte[WGPacketSize];     //Data received
+            public byte[] recv = new byte[1024]; //WGPacketSize];     //Data received
 
             public WGPacketShort()
             {
                 Reset();
             }
-            public void Reset()  //数据复位
+            public void Reset()  //Data Reunification
             {
                 for (int i = 0; i < 56; i++)
                 {
                     data[i] = 0;
                 }
             }
-            static long sequenceId;     //序列号	
-            public byte[] toByte() //生成64字节指令包
+            static long sequenceId;     //Serial number	
+            public byte[] toByte() //Generate64Bytes package
             {
                 byte[] buff = new byte[WGPacketSize];
                 sequenceId++;
@@ -571,7 +571,7 @@ namespace WGController32_CSharp
             }
 
             WG3000_COMM.Core.wgMjController controller = new WG3000_COMM.Core.wgMjController();
-            public int run()  //发送指令 接收返回信息
+            public int run()  //Send Command Can not open message
             {
                 byte[] buff = toByte();
 
@@ -583,11 +583,11 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
-                        //流水号
+                        //Water Stream
                         long sequenceIdReceived = 0;
                         for (int i = 0; i < 4; i++)
                         {
@@ -595,9 +595,9 @@ namespace WGController32_CSharp
                             sequenceIdReceived += (lng << (8 * i));
                         }
 
-                        if ((recv[0] == Type)                       //类型一致
-                            && (recv[1] == functionID)              //功能号一致
-                            && (sequenceIdReceived == sequenceId))  //序列号对应
+                        if ((recv[0] == Type)                       //Align type
+                            && (recv[1] == functionID)              //Function numbers are consistent
+                            && (sequenceIdReceived == sequenceId))  //Serial number corresponding
                         {
                             return 1;
                         }
@@ -606,12 +606,12 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
 
-            //加密调用的动态库
+            //Encrypt the call dynamic library
             [DllImport("n3kWGCom.dll", EntryPoint = "ShortEncrypt", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
             public static extern int ShortEncrypt(IntPtr command, IntPtr password);
 
@@ -619,19 +619,19 @@ namespace WGController32_CSharp
             static extern int ShortDecrypt(IntPtr command, IntPtr password);
   
             [DllImport("n3kWGCom.dll", EntryPoint = "ShortEncryptSM4_ECB", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-            public static extern int ShortEncryptSM4_ECB(IntPtr command,int cmdLen, IntPtr password); //2015-09-28 12:05:54 加密WGPacketShort 包 短报文
+            public static extern int ShortEncryptSM4_ECB(IntPtr command,int cmdLen, IntPtr password); //2015-09-28 12:05:54 EncryptionWGPacketShort Package Shortcasts
 
             [DllImport("n3kWGCom.dll", EntryPoint = "ShortDecryptSM4_ECB", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-            public static extern int ShortDecryptSM4_ECB(IntPtr command,int cmdLen, IntPtr password); //2015-09-28 12:05:54 加密WGPacketShort 包 短报文
+            public static extern int ShortDecryptSM4_ECB(IntPtr command,int cmdLen, IntPtr password); //2015-09-28 12:05:54 EncryptionWGPacketShort Package Shortcasts
 
             [DllImport("n3kWGCom.dll", EntryPoint = "ShortEncryptSM4_CBC", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-            public static extern int ShortEncryptSM4_CBC(IntPtr command,int cmdLen, IntPtr password, IntPtr IV); //2015-09-28 12:05:54 加密WGPacketShort 包 短报文
+            public static extern int ShortEncryptSM4_CBC(IntPtr command,int cmdLen, IntPtr password, IntPtr IV); //2015-09-28 12:05:54 EncryptionWGPacketShort Package Shortcasts
 
             [DllImport("n3kWGCom.dll", EntryPoint = "ShortDecryptSM4_CBC", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-            public static extern int ShortDecryptSM4_CBC(IntPtr command,int cmdLen, IntPtr password, IntPtr IV); //2015-09-28 12:05:54 加密WGPacketShort 包 短报文
+            public static extern int ShortDecryptSM4_CBC(IntPtr command,int cmdLen, IntPtr password, IntPtr IV); //2015-09-28 12:05:54 EncryptionWGPacketShort Package Shortcasts
 
 
-            public static int EncryptSM4_ECB(ref byte[] command, byte[] password)  //2015-09-28 13:19:12 2013-4-2_07:31:32 加密数据
+            public static int EncryptSM4_ECB(ref byte[] command, byte[] password)  //2015-09-28 13:19:12 2013-4-2_07:31:32 Encrypt data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)64);
 
@@ -643,14 +643,14 @@ namespace WGController32_CSharp
                 int ret = ShortEncryptSM4_ECB(pkt,64, commPassword);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 64);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 64);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
 
             }
-            public static int DecryptSM4_ECB(ref byte[] command, byte[] password)  //2015-09-28 15:12:12  解密数据
+            public static int DecryptSM4_ECB(ref byte[] command, byte[] password)  //2015-09-28 15:12:12  Decrypt Data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)64);
 
@@ -663,15 +663,15 @@ namespace WGController32_CSharp
                 int ret = ShortDecryptSM4_ECB(pkt, 64, commPassword);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 64);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 64);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
             }
 
 
-            public static int EncryptSM4_ECB1024(ref byte[] command, byte[] password)  //2015-09-28 13:19:12 2013-4-2_07:31:32 加密数据
+            public static int EncryptSM4_ECB1024(ref byte[] command, byte[] password)  //2015-09-28 13:19:12 2013-4-2_07:31:32 Encrypt data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)1024);
 
@@ -683,14 +683,14 @@ namespace WGController32_CSharp
                 int ret = ShortEncryptSM4_ECB(pkt, 1024, commPassword);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 1024);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 1024);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
 
             }
-            public static int DecryptSM4_ECB1024(ref byte[] command, byte[] password)  //2015-09-28 15:12:12  解密数据
+            public static int DecryptSM4_ECB1024(ref byte[] command, byte[] password)  //2015-09-28 15:12:12  Decrypt Data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)1024);
 
@@ -703,14 +703,14 @@ namespace WGController32_CSharp
                 int ret = ShortDecryptSM4_ECB(pkt, 1024, commPassword);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 1024);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 1024);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
             }
 
-            public static int EncryptSM4_CBC(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 13:19:12 2013-4-2_07:31:32 加密数据
+            public static int EncryptSM4_CBC(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 13:19:12 2013-4-2_07:31:32 Encrypt data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)64);
 
@@ -725,14 +725,14 @@ namespace WGController32_CSharp
                 int ret = ShortEncryptSM4_CBC(pkt, 64, commPassword,iv);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 64);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 64);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
 
             }
-            public static int DecryptSM4_CBC(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 15:12:12  解密数据
+            public static int DecryptSM4_CBC(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 15:12:12  Decrypt Data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)64);
 
@@ -747,15 +747,15 @@ namespace WGController32_CSharp
                 int ret = ShortDecryptSM4_CBC(pkt, 64, commPassword,iv);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 64);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 64);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
             }
 
 
-            public static int EncryptSM4_CBC1024(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 13:19:12 2013-4-2_07:31:32 加密数据
+            public static int EncryptSM4_CBC1024(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 13:19:12 2013-4-2_07:31:32 Encrypt data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)1024);
 
@@ -770,14 +770,14 @@ namespace WGController32_CSharp
                 int ret = ShortEncryptSM4_CBC(pkt, 1024, commPassword,iv);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 1024);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 1024);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
 
             }
-            public static int DecryptSM4_CBC1024(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 15:12:12  解密数据
+            public static int DecryptSM4_CBC1024(ref byte[] command, byte[] password, byte[] IV)  //2015-09-28 15:12:12  Decrypt Data
             {
                 IntPtr pkt = Marshal.AllocHGlobal((Int32)1024);
 
@@ -791,15 +791,15 @@ namespace WGController32_CSharp
                 int ret = ShortDecryptSM4_CBC(pkt, 1024, commPassword,iv);
                 if (ret > 0)
                 {
-                    Marshal.Copy(pkt, command, 0, 1024);  //复制回来
+                    Marshal.Copy(pkt, command, 0, 1024);  //Copy it.
                 }
-                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 释放内存
-                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 释放内存
+                Marshal.FreeHGlobal(pkt); //2014-01-02 13:20:43 Release Memory
+                Marshal.FreeHGlobal(commPassword); //2014-01-02 13:20:43 Release Memory
                 return ret;
             }
 
 
-            public int run_ECB(byte[] commPassword)  //2015-10-28 10:16:38 通信密处理发送指令 接收返回信息
+            public int run_ECB(byte[] commPassword)  //2015-10-28 10:16:38 Message-processing dispatch instructions Can not open message
             {
                 byte[] buff = toByte();
                 EncryptSM4_ECB(ref buff, commPassword);
@@ -812,7 +812,7 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
@@ -825,7 +825,7 @@ namespace WGController32_CSharp
                             }
                             else
                             {
-                                if ((buffbak[0] & 0x7F) == Type) //2015-12-02 21:06:13 如果解密前的代码是有效的
+                                if ((buffbak[0] & 0x7F) == Type) //2015-12-02 21:06:13 If the code before decryption is valid,
                                 {
                                     Array.Copy(buffbak,recv,  64);
                                 }
@@ -833,7 +833,7 @@ namespace WGController32_CSharp
                         if ((recv[0] & 0x7F) == Type)
                         {
 
-                            //流水号
+                            //Water Stream
                             long sequenceIdReceived = 0;
                             for (int i = 0; i < 4; i++)
                             {
@@ -841,9 +841,9 @@ namespace WGController32_CSharp
                                 sequenceIdReceived += (lng << (8 * i));
                             }
 
-                            if ((recv[0] == Type)                       //类型一致
-                                && (recv[1] == functionID)              //功能号一致
-                                && (sequenceIdReceived == sequenceId))  //序列号对应
+                            if ((recv[0] == Type)                       //Align type
+                                && (recv[1] == functionID)              //Function numbers are consistent
+                                && (sequenceIdReceived == sequenceId))  //Serial number corresponding
                             {
                                 return 1;
                             }
@@ -857,11 +857,11 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
-            public int run_CBC(byte[] commPassword,byte[] IV)  //2015-10-28 10:16:38 通信密处理发送指令 接收返回信息
+            public int run_CBC(byte[] commPassword,byte[] IV)  //2015-10-28 10:16:38 Message-processing dispatch instructions Can not open message
             {
                 byte[] buff = toByte();
                 EncryptSM4_CBC(ref buff, commPassword,IV);
@@ -874,7 +874,7 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
@@ -887,7 +887,7 @@ namespace WGController32_CSharp
                         }
                         else
                         {
-                            if ((buffbak[0] & 0x7F) == Type) //2015-12-02 21:06:13 如果解密前的代码是有效的
+                            if ((buffbak[0] & 0x7F) == Type) //2015-12-02 21:06:13 If the code before decryption is valid,
                             {
                                 Array.Copy(buffbak, recv, 64);
                             }
@@ -895,7 +895,7 @@ namespace WGController32_CSharp
                         if ((recv[0] & 0x7F) == Type)
                         {
 
-                            //流水号
+                            //Water Stream
                             long sequenceIdReceived = 0;
                             for (int i = 0; i < 4; i++)
                             {
@@ -903,9 +903,9 @@ namespace WGController32_CSharp
                                 sequenceIdReceived += (lng << (8 * i));
                             }
 
-                            if ((recv[0] == Type)                       //类型一致
-                                && (recv[1] == functionID)              //功能号一致
-                                && (sequenceIdReceived == sequenceId))  //序列号对应
+                            if ((recv[0] == Type)                       //Align type
+                                && (recv[1] == functionID)              //Function numbers are consistent
+                                && (sequenceIdReceived == sequenceId))  //Serial number corresponding
                             {
                                 return 1;
                             }
@@ -919,11 +919,11 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
-            public int run1024(byte[] buff)  //2015-11-05 14:50:45 1024字节指令 发送指令 接收返回信息 
+            public int run1024(byte[] buff)  //2015-11-05 14:50:45 1024Byte Command Send Command Can not open message 
             {
                 long sequenceIdSend = 0;
                 for (int i = 0; i < 4; i++)
@@ -940,12 +940,12 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
                        
-                        //流水号
+                        //Water Stream
                         long sequenceIdReceived = 0;
                         for (int i = 0; i < 4; i++)
                         {
@@ -953,9 +953,9 @@ namespace WGController32_CSharp
                             sequenceIdReceived += (lng << (8 * i));
                         }
 
-                        if ((recv[0] == Type)                       //类型一致
-                            && (recv[1] == functionID)              //功能号一致
-                            && (sequenceIdReceived == sequenceIdSend)  //序列号对应
+                        if ((recv[0] == Type)                       //Align type
+                            && (recv[1] == functionID)              //Function numbers are consistent
+                            && (sequenceIdReceived == sequenceIdSend)  //Serial number corresponding
                         )
                         {
                             return 1;
@@ -965,14 +965,14 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
 
 
-            //commPassword 为空时不采用密码. 密码必须是16字节
-            public int run1024_ECB(byte[] buff,byte[] commPassword)  //2015-11-05 14:50:45 1024字节指令 加密通信部分 发送指令 接收返回信息 
+            //commPassword Do not use passwords when empty. The password must be16Bytes
+            public int run1024_ECB(byte[] buff,byte[] commPassword)  //2015-11-05 14:50:45 1024Byte Command Encrypted communications component Send Command Can not open message 
             {
                 long sequenceIdSend = 0;
                 for (int i = 0; i < 4; i++)
@@ -982,7 +982,7 @@ namespace WGController32_CSharp
                 }
                 if (commPassword != null)  
                 {
-                    //如果加密
+                    //If Encryption
                     EncryptSM4_ECB1024(ref buff, commPassword);
                 }
                 int tries = 3;
@@ -993,7 +993,7 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
@@ -1001,11 +1001,11 @@ namespace WGController32_CSharp
                         {
                             if ((commPassword != null) && recv.Length == 1024)
                             {
-                                //如果加密了
+                                //If it's encrypted,
                                 DecryptSM4_ECB1024(ref recv, commPassword);
                             }
                         }
-                        //流水号
+                        //Water Stream
                         long sequenceIdReceived = 0;
                         for (int i = 0; i < 4; i++)
                         {
@@ -1013,9 +1013,9 @@ namespace WGController32_CSharp
                             sequenceIdReceived += (lng << (8 * i));
                         }
 
-                        if ((recv[0] == Type)                       //类型一致
-                            && (recv[1] == functionID)              //功能号一致
-                            && (sequenceIdReceived == sequenceIdSend)  //序列号对应
+                        if ((recv[0] == Type)                       //Align type
+                            && (recv[1] == functionID)              //Function numbers are consistent
+                            && (sequenceIdReceived == sequenceIdSend)  //Serial number corresponding
                         )
                         {
                             return 1;
@@ -1025,12 +1025,12 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
 
-            public int run1024_CBC(byte[] buff, byte[] commPassword, byte[] IV)  //2015-11-05 14:50:45 1024字节指令 加密通信部分 发送指令 接收返回信息 
+            public int run1024_CBC(byte[] buff, byte[] commPassword, byte[] IV)  //2015-11-05 14:50:45 1024Byte Command Encrypted communications component Send Command Can not open message 
             {
                 long sequenceIdSend = 0;
                 for (int i = 0; i < 4; i++)
@@ -1040,7 +1040,7 @@ namespace WGController32_CSharp
                 }
                 if (commPassword != null)
                 {
-                    //如果加密
+                    //If Encryption
                     EncryptSM4_CBC1024(ref buff, commPassword,IV);
                 }
                 int tries = 3;
@@ -1051,7 +1051,7 @@ namespace WGController32_CSharp
                 {
                     if (controller.ShortPacketSend(buff, ref recv) < 0)
                     {
-                        //2015-11-03 20:26:52 进入重试 return -1;
+                        //2015-11-03 20:26:52 Enter Retry return -1;
                     }
                     else
                     {
@@ -1059,11 +1059,11 @@ namespace WGController32_CSharp
                         {
                             if ((commPassword != null) && recv.Length == 1024)
                             {
-                                //如果加密了
+                                //If it's encrypted,
                                 DecryptSM4_CBC1024(ref recv, commPassword,IV);
                             }
                         }
-                        //流水号
+                        //Water Stream
                         long sequenceIdReceived = 0;
                         for (int i = 0; i < 4; i++)
                         {
@@ -1071,9 +1071,9 @@ namespace WGController32_CSharp
                             sequenceIdReceived += (lng << (8 * i));
                         }
 
-                        if ((recv[0] == Type)                       //类型一致
-                            && (recv[1] == functionID)              //功能号一致
-                            && (sequenceIdReceived == sequenceIdSend)  //序列号对应
+                        if ((recv[0] == Type)                       //Align type
+                            && (recv[1] == functionID)              //Function numbers are consistent
+                            && (sequenceIdReceived == sequenceIdSend)  //Serial number corresponding
                         )
                         {
                             return 1;
@@ -1083,21 +1083,21 @@ namespace WGController32_CSharp
                             errcnt++;
                         }
                     }
-                } while (tries-- > 0); //重试三次
+                } while (tries-- > 0); //Try again three times.
 
                 return -1;
             }
 
             /// <summary>
-            /// 最后发出的流水号
+            /// It's the last running water.
             /// </summary>
             /// <returns></returns>
             public static long sequenceIdSent()// 
             {
-                return sequenceId; // 最后发出的流水号
+                return sequenceId; // It's the last running water.
             }
             /// <summary>
-            /// 关闭
+            /// Close
             /// </summary>
             public void close()
             {
@@ -1105,22 +1105,22 @@ namespace WGController32_CSharp
             }
         }
 
-        void log(string info)  //日志信息
+        void log(string info)  //Log Information
         {
             //txtInfo.Text += string.Format("{0}\r\n", info);
             //txtInfo.AppendText(string.Format("{0}\r\n", info));
-            txtInfo.AppendText(string.Format("{0} {1}\r\n", DateTime.Now.ToString("HH:mm:ss"), info)); //2015-11-03 20:55:49 显示时间
-            txtInfo.ScrollToCaret();//滚动到光标处
+            txtInfo.AppendText(string.Format("{0} {1}\r\n", DateTime.Now.ToString("HH:mm:ss"), info)); //2015-11-03 20:55:49 Show Time
+            txtInfo.ScrollToCaret();//Scroll to cursor
             Application.DoEvents();
         }
 
         /// <summary>
-        /// 4字节转成整型数(低位前, 高位后)
+        /// 4Byte to Integer(Down front., Behind you.)
         /// </summary>
-        /// <param name="buff">字节数组</param>
-        /// <param name="start">起始索引位(从0开始计)</param>
-        /// <param name="len">长度</param>
-        /// <returns>整型数</returns>
+        /// <param name="buff">Bytes</param>
+        /// <param name="start">Start Indexing Post(From0Start counting.)</param>
+        /// <param name="len">Length</param>
+        /// <returns>Integer</returns>
         long byteToLong(byte[] buff, int start, int len)
         {
             long val = 0;
@@ -1133,167 +1133,167 @@ namespace WGController32_CSharp
         }
 
         /// <summary>
-        /// 整型数转换为4字节数组
+        /// Convert the integer to4Bytes
         /// </summary>
-        /// <param name="outBytes">数组</param>
-        /// <param name="startIndex">起始索引位(从0开始计)</param>
-        /// <param name="val">数值</param>
+        /// <param name="outBytes">Array</param>
+        /// <param name="startIndex">Start Indexing Post(From0Start counting.)</param>
+        /// <param name="val">Value</param>
         void LongToBytes(ref byte[] outBytes, int startIndex, long val)
         {
             Array.Copy(System.BitConverter.GetBytes(val), 0, outBytes, startIndex, 4);
         }
         /// <summary>
-        /// 获取Hex值, 主要用于日期时间格式
+        /// AccessHexValue, Mainly used in date time format
         /// </summary>
-        /// <param name="val">数值</param>
-        /// <returns>Hex值</returns>
+        /// <param name="val">Value</param>
+        /// <returns>HexValue</returns>
         int GetHex(int val)
         {
             return ((val % 10) + (((val - (val % 10)) / 10) % 10) * 16);
         }
 
         /// <summary>
-        /// 显示记录信息
+        /// Show Record Information
         /// </summary>
         /// <param name="recv"></param>
         void displayRecordInformation(byte[] recv)
         {
-            //8-11	记录的索引号
-            //(=0表示没有记录)	4	0x00000000
+            //8-11	Record index number
+            //(=0No record.)	4	0x00000000
             int recordIndex = 0;
             recordIndex = (int)byteToLong(recv, 8, 4);
 
-            //12	记录类型**********************************************
-            //0=无记录
-            //1=刷卡记录
-            //2=门磁,按钮, 设备启动, 远程开门记录
-            //3=报警记录	1	
-            //0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+            //12	Record type**********************************************
+            //0=No record
+            //1=Brush Card Record
+            //2=Door Magnetic,button, Device startup, Remote Open Record
+            //3=Call the police.	1	
+            //0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
             int recordType = recv[12];
 
-            //13	有效性(0 表示不通过, 1表示通过)	1	
+            //13	Validity(0 Not approved, 1Adopted)	1	
             int recordValid = recv[13];
 
-            //14	门号(1,2,3,4)	1	
+            //14	Door number.(1,2,3,4)	1	
             int recordDoorNO = recv[14];
 
-            //15	进门/出门(1表示进门, 2表示出门)	1	0x01
+            //15	Come in./Out.(1It means coming in., 2Means out.)	1	0x01
             int recordInOrOut = recv[15];
 
-            //16-19	卡号(类型是刷卡记录时)
-            //或编号(其他类型记录)	4	
+            //16-19	Card(Type is when swiping a card.)
+            //or numbering(Other types of records)	4	
             long recordCardNO = 0;
             recordCardNO = byteToLong(recv, 16, 4);
 
-            //20-26	刷卡时间:
-            //年月日时分秒 (采用BCD码)见设置时间部分的说明
+            //20-26	Brush Time:
+            //Days and days of year (AdoptBCDCode)See description of the set-up segment
             string recordTime = "2000-01-01 00:00:00";
             recordTime = string.Format("{0:X2}{1:X2}-{2:X2}-{3:X2} {4:X2}:{5:X2}:{6:X2}",
                 recv[20], recv[21], recv[22], recv[23], recv[24], recv[25], recv[26]);
             //2012.12.11 10:49:59	7	
-            //27	记录原因代码(可以查 “刷卡记录说明.xls”文件的ReasonNO)
-            //处理复杂信息才用	1	
+            //27	Record cause code(You can check it out. “Checkcard log notes.xls”It's a file.ReasonNO)
+            //It's only for complex information.	1	
             int reason = recv[27];
 
 
-            //0=无记录
-            //1=刷卡记录
-            //2=门磁,按钮, 设备启动, 远程开门记录
-            //3=报警记录	1	
-            //0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+            //0=No record
+            //1=Brush Card Record
+            //2=Door Magnetic,button, Device startup, Remote Open Record
+            //3=Call the police.	1	
+            //0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
             if (recordType == 0)
             {
-                log(string.Format("索引位={0}  无记录", recordIndex));
+                log(string.Format("Index post={0}  No record", recordIndex));
             }
             else if (recordType == 0xff)
             {
-                log(" 指定索引位的记录已被覆盖掉了,请使用索引0, 取回最早一条记录的索引值");
+                log(" The records of the specified index have been overwritten,Use the index.0, Retrieving index values from the earliest record");
             }
-            else if (recordType == 1) //2015-06-10 08:49:31 显示记录类型为卡号的数据
+            else if (recordType == 1) //2015-06-10 08:49:31 Show data with card number type of record
             {
-                //卡号
-                log(string.Format("索引位={0}  ", recordIndex));
-                log(string.Format("  卡号 = {0}", recordCardNO));
-                log(string.Format("  门号 = {0}", recordDoorNO));
-                log(string.Format("  进出 = {0}", recordInOrOut == 1 ? "进门" : "出门"));
-                log(string.Format("  有效 = {0}", recordValid == 1 ? "通过" : "禁止"));
-                log(string.Format("  时间 = {0}", recordTime));
-                log(string.Format("  描述 = {0}", getReasonDetailChinese(reason)));
+                //Card
+                log(string.Format("Index post={0}  ", recordIndex));
+                log(string.Format("  Card = {0}", recordCardNO));
+                log(string.Format("  Door number. = {0}", recordDoorNO));
+                log(string.Format("  Access = {0}", recordInOrOut == 1 ? "Come in." : "Out."));
+                log(string.Format("  Valid. = {0}", recordValid == 1 ? "Pass." : "Ban"));
+                log(string.Format("  Time = {0}", recordTime));
+                log(string.Format("  Description = {0}", getReasonDetailChinese(reason)));
             }
             else if (recordType == 2)
             {
-                //其他处理
-                //门磁,按钮, 设备启动, 远程开门记录
-                log(string.Format("索引位={0}  非刷卡记录", recordIndex));
-                log(string.Format("  编号 = {0}", recordCardNO));
-                log(string.Format("  门号 = {0}", recordDoorNO));
-                log(string.Format("  时间 = {0}", recordTime));
-                log(string.Format("  描述 = {0}", getReasonDetailChinese(reason)));
+                //Other processing
+                //Door Magnetic,button, Device startup, Remote Open Record
+                log(string.Format("Index post={0}  Non-card records", recordIndex));
+                log(string.Format("  Numbering = {0}", recordCardNO));
+                log(string.Format("  Door number. = {0}", recordDoorNO));
+                log(string.Format("  Time = {0}", recordTime));
+                log(string.Format("  Description = {0}", getReasonDetailChinese(reason)));
             }
             else if (recordType == 3)
             {
-                //其他处理
-                //报警记录
-                log(string.Format("索引位={0}  报警记录", recordIndex));
-                log(string.Format("  编号 = {0}", recordCardNO));
-                log(string.Format("  门号 = {0}", recordDoorNO));
-                log(string.Format("  时间 = {0}", recordTime));
-                log(string.Format("  描述 = {0}", getReasonDetailChinese(reason)));
+                //Other processing
+                //Call the police.
+                log(string.Format("Index post={0}  Call the police.", recordIndex));
+                log(string.Format("  Numbering = {0}", recordCardNO));
+                log(string.Format("  Door number. = {0}", recordDoorNO));
+                log(string.Format("  Time = {0}", recordTime));
+                log(string.Format("  Description = {0}", getReasonDetailChinese(reason)));
             }
         }
 
         string[] RecordDetails =
         {
-//记录原因 (类型中 SwipePass 表示通过; SwipeNOPass表示禁止通过; ValidEvent 有效事件(如按钮 门磁 超级密码开门); Warn 报警事件)
-//代码  类型   英文描述  中文描述
-"1","SwipePass","Swipe","刷卡开门",
-"2","SwipePass","Swipe Close","刷卡关",
-"3","SwipePass","Swipe Open","刷卡开",
-"4","SwipePass","Swipe Limited Times","刷卡开门(带限次)",
-"5","SwipeNOPass","Denied Access: PC Control","刷卡禁止通过: 电脑控制",
-"6","SwipeNOPass","Denied Access: No PRIVILEGE","刷卡禁止通过: 没有权限",
-"7","SwipeNOPass","Denied Access: Wrong PASSWORD","刷卡禁止通过: 密码不对",
-"8","SwipeNOPass","Denied Access: AntiBack","刷卡禁止通过: 反潜回",
-"9","SwipeNOPass","Denied Access: More Cards","刷卡禁止通过: 多卡",
-"10","SwipeNOPass","Denied Access: First Card Open","刷卡禁止通过: 首卡",
-"11","SwipeNOPass","Denied Access: Door Set NC","刷卡禁止通过: 门为常闭",
-"12","SwipeNOPass","Denied Access: InterLock","刷卡禁止通过: 互锁",
-"13","SwipeNOPass","Denied Access: Limited Times","刷卡禁止通过: 受刷卡次数限制",
-"14","SwipeNOPass","Denied Access: Limited Person Indoor","刷卡禁止通过: 门内人数限制",
-"15","SwipeNOPass","Denied Access: Invalid Timezone","刷卡禁止通过: 卡过期或不在有效时段",
-"16","SwipeNOPass","Denied Access: In Order","刷卡禁止通过: 按顺序进出限制",
-"17","SwipeNOPass","Denied Access: SWIPE GAP LIMIT","刷卡禁止通过: 刷卡间隔约束",
-"18","SwipeNOPass","Denied Access","刷卡禁止通过: 原因不明",
-"19","SwipeNOPass","Denied Access: Limited Times","刷卡禁止通过: 刷卡次数限制",
-"20","ValidEvent","Push Button","按钮开门",
-"21","ValidEvent","Push Button Open","按钮开",
-"22","ValidEvent","Push Button Close","按钮关",
-"23","ValidEvent","Door Open","门打开[门磁信号]",
-"24","ValidEvent","Door Closed","门关闭[门磁信号]",
-"25","ValidEvent","Super Password Open Door","超级密码开门",
-"26","ValidEvent","Super Password Open","超级密码开",
-"27","ValidEvent","Super Password Close","超级密码关",
-"28","Warn","Controller Power On","控制器上电",
-"29","Warn","Controller Reset","控制器复位",
-"30","Warn","Push Button Invalid: Disable","按钮不开门: 按钮禁用",
-"31","Warn","Push Button Invalid: Forced Lock","按钮不开门: 强制关门",
-"32","Warn","Push Button Invalid: Not On Line","按钮不开门: 门不在线",
-"33","Warn","Push Button Invalid: InterLock","按钮不开门: 互锁",
-"34","Warn","Threat","胁迫报警",
-"35","Warn","Threat Open","胁迫报警开",
-"36","Warn","Threat Close","胁迫报警关",
-"37","Warn","Open too long","门长时间未关报警[合法开门后]",
-"38","Warn","Forced Open","强行闯入报警",
-"39","Warn","Fire","火警",
-"40","Warn","Forced Close","强制关门",
-"41","Warn","Guard Against Theft","防盗报警",
-"42","Warn","7*24Hour Zone","烟雾煤气温度报警",
-"43","Warn","Emergency Call","紧急呼救报警",
-"44","RemoteOpen","Remote Open Door","操作员远程开门",
-"45","RemoteOpen","Remote Open Door By USB Reader","发卡器确定发出的远程开门"
+//Record cause (Type SwipePass Adopted; SwipeNOPassMeans no pass.; ValidEvent Effective Event(Like buttons Door Magnetic Supercode open.); Warn Call the police.)
+//Code  Type   English Description  Chinese Description
+"1","SwipePass","Swipe","Open the swipe.",
+"2","SwipePass","Swipe Close","Brush off",
+"3","SwipePass","Swipe Open","Open it.",
+"4","SwipePass","Swipe Limited Times","Open the swipe.(Time limit)",
+"5","SwipeNOPass","Denied Access: PC Control","It's forbidden to pass.: Computer control",
+"6","SwipeNOPass","Denied Access: No PRIVILEGE","It's forbidden to pass.: No Permissions",
+"7","SwipeNOPass","Denied Access: Wrong PASSWORD","It's forbidden to pass.: Wrong password.",
+"8","SwipeNOPass","Denied Access: AntiBack","It's forbidden to pass.: Backwards",
+"9","SwipeNOPass","Denied Access: More Cards","It's forbidden to pass.: Doc!",
+"10","SwipeNOPass","Denied Access: First Card Open","It's forbidden to pass.: First Card",
+"11","SwipeNOPass","Denied Access: Door Set NC","It's forbidden to pass.: It's always closed.",
+"12","SwipeNOPass","Denied Access: InterLock","It's forbidden to pass.: Interlock",
+"13","SwipeNOPass","Denied Access: Limited Times","It's forbidden to pass.: Limited number of brush cards",
+"14","SwipeNOPass","Denied Access: Limited Person Indoor","It's forbidden to pass.: Number of people in the door",
+"15","SwipeNOPass","Denied Access: Invalid Timezone","It's forbidden to pass.: Card expired or not valid",
+"16","SwipeNOPass","Denied Access: In Order","It's forbidden to pass.: Ordered access restrictions",
+"17","SwipeNOPass","Denied Access: SWIPE GAP LIMIT","It's forbidden to pass.: Brush Card Interval",
+"18","SwipeNOPass","Denied Access","It's forbidden to pass.: Reason unknown.",
+"19","SwipeNOPass","Denied Access: Limited Times","It's forbidden to pass.: Limit number of brushes",
+"20","ValidEvent","Push Button","Button open.",
+"21","ValidEvent","Push Button Open","Button On",
+"22","ValidEvent","Push Button Close","Button Off",
+"23","ValidEvent","Door Open","Open the door.[Door Magnetic Signal]",
+"24","ValidEvent","Door Closed","Door closed.[Door Magnetic Signal]",
+"25","ValidEvent","Super Password Open Door","Supercode open.",
+"26","ValidEvent","Super Password Open","Supercode open.",
+"27","ValidEvent","Super Password Close","Super Password Level",
+"28","Warn","Controller Power On","Power on the controller.",
+"29","Warn","Controller Reset","Control Reposition",
+"30","Warn","Push Button Invalid: Disable","Buttons don't open.: button disabled",
+"31","Warn","Push Button Invalid: Forced Lock","Buttons don't open.: Force the closing.",
+"32","Warn","Push Button Invalid: Not On Line","Buttons don't open.: The door's offline.",
+"33","Warn","Push Button Invalid: InterLock","Buttons don't open.: Interlock",
+"34","Warn","Threat","Coercion to the police.",
+"35","Warn","Threat Open","Coercion to call the police.",
+"36","Warn","Threat Close","Coercion to alarm.",
+"37","Warn","Open too long","The door was open for a long time.[After legally opening the door,]",
+"38","Warn","Forced Open","Forced breaking into the police.",
+"39","Warn","Fire","Fire!",
+"40","Warn","Forced Close","Force the closing.",
+"41","Warn","Guard Against Theft","It's an alarm.",
+"42","Warn","7*24Hour Zone","Smoke gas temperature alert.",
+"43","Warn","Emergency Call","Call 911.",
+"44","RemoteOpen","Remote Open Door","Operator opens the door remotely.",
+"45","RemoteOpen","Remote Open Door By USB Reader","The transmitter has confirmed the remote opening."
         };
 
-        string getReasonDetailChinese(int Reason) //中文
+        string getReasonDetailChinese(int Reason) //Chinese
         {
             if (Reason > 45)
             {
@@ -1303,10 +1303,10 @@ namespace WGController32_CSharp
             {
                 return "";
             }
-            return RecordDetails[(Reason - 1) * 4 + 3]; //中文信息
+            return RecordDetails[(Reason - 1) * 4 + 3]; //Chinese Information
         }
 
-        string getReasonDetailEnglish(int Reason) //英文描述
+        string getReasonDetailEnglish(int Reason) //English Description
         {
             if (Reason > 45)
             {
@@ -1316,50 +1316,50 @@ namespace WGController32_CSharp
             {
                 return "";
             }
-            return RecordDetails[(Reason - 1) * 4 + 2]; //英文信息
+            return RecordDetails[(Reason - 1) * 4 + 2]; //Information in English
         }
         /// <summary>
-        /// 基本功能测试
+        /// Basic function test
         /// </summary>
-        /// <param name="ControllerIP">控制器IP地址</param>
-        /// <param name="controllerSN"> 控制器序列号</param>
-        /// <returns>小于或等于0 失败, 1表示成功</returns>
+        /// <param name="ControllerIP">controllerIPAddress</param>
+        /// <param name="controllerSN"> Control serial number</param>
+        /// <returns>less than or equal to0 Failed, 1It means success.</returns>
   
   
         private void button3_Click(object sender, EventArgs e)
         {
             
-            //测试CBC方法
-            log("SM4 CBC通信 测试...");
+            //TestCBCMethodology
+            log("SM4 CBCCommunications Test...");
             String ControllerIP = txtIP.Text;
             long controllerSN = long.Parse(txtSN.Text);
 
 
 
             int ret = 0;
-            int success = 0;  //0 失败, 1表示成功
+            int success = 0;  //0 Failed, 1It means success.
 
 
-            //创建短报文 pkt
+            //Create short message pkt
             WGPacketShort pkt = new WGPacketShort();
             pkt.iDevSn = controllerSN;
             pkt.IP = ControllerIP;
-            byte[] commPassword = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 }; //16字节密码
+            byte[] commPassword = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00 }; //16Byte Password
 
-            byte[] IV = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 }; //16字节 初始变量
+            byte[] IV = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 }; //16Bytes Initial Variables
 
-            //设置通信密码 SM4 CBC [功能号: 0xE2] **********************************************************************************
+            //Set Communications Password SM4 CBC [Function Number: 0xE2] **********************************************************************************
             pkt.Reset();
             pkt.functionID = 0xE2;
-            //防止误操作标识
+            //Ideas against error
             Array.Copy(System.BitConverter.GetBytes(WGPacketShort.SpecialFlag), 0, pkt.data, 0, 4);
-            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00设置新密码
+            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00Set New Password
             {
                 pkt.data[4 + i] = commPassword[i];
                 pkt.data[36 + i] = commPassword[i];
             }
 
-            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00设置IV
+            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00SettingsIV
             {
                 if (i < 12)
                 {
@@ -1371,33 +1371,33 @@ namespace WGController32_CSharp
                 }
             }
 
-            //分两种情况: 密码为空  或者 已设置过密码
-            ret = pkt.run();  //2015-11-02 10:21:22 先尝试控制器没有密码的操作
+            //In two cases.: Password is empty  Or... Password set
+            ret = pkt.run();  //2015-11-02 10:21:22 Try the controller without password first.
             success = 0;
             if (ret > 0)
             {
                 if (pkt.recv[8] == 1)
                 {
-                    log("通信密码设置成功...");
+                    log("Communication password set successfully...");
                     success = 1;
                 }
             }
             if (success == 0)
             {
-                ret = pkt.run_CBC(commPassword, IV);  //2015-11-02 10:21:22 再尝试控制器已有密码的操作
+                ret = pkt.run_CBC(commPassword, IV);  //2015-11-02 10:21:22 Try the password operation for the controller.
                 if ((ret > 0) && (pkt.recv[8] == 1))
                 {
-                    log("通信密码设置成功...[通过加密通信操作]");
+                    log("Communication password set successfully...[Can not open message]");
                     success = 1;
                 }
                 else
                 {
-                    log("通信密码设置失败...[通过加密通信操作]");
+                    log("Communication password setup failed...[Can not open message]");
                 }
             }
 
-            //采用通信密码通信
-            //1.10	远程开门[功能号: 0x40] **********************************************************************************
+            //Communication using coded communications
+            //1.10	Open remote[Function Number: 0x40] **********************************************************************************
             int doorNO = 1;
             pkt.Reset();
             pkt.functionID = 0x40;
@@ -1408,38 +1408,38 @@ namespace WGController32_CSharp
             {
                 if (pkt.recv[8] == 1)
                 {
-                    //有效开门.....
-                    log("1.10 远程开门	 成功...[通过加密通信操作]");
+                    //Open the door effectively......
+                    log("1.10 Open remote	 Success...[Can not open message]");
                     success = 1;
                 }
                 else
                 {
-                    log("1.10 远程开门	 失败...[通过加密通信操作]");
+                    log("1.10 Open remote	 Failed...[Can not open message]");
                 }
             }
             else
             {
-                log("1.10 远程开门	 失败...[通过加密通信操作]");
+                log("1.10 Open remote	 Failed...[Can not open message]");
             }
 
-            //演示1024字节 加密操作...
+            //Presentation1024Bytes Encryption Operations...
             byte[] command1024 = new byte[1024];
 
 
-            //1.9	提取记录操作
-            //1. 通过 0xB0指令 获取最早一条记录索引
-            //2. 通过 0xB0指令 获取最后一条记录索引
-            //3. 通过 0xB4指令 获取已读取过的记录索引号 recordIndex
-            //4. 通过 0xB0指令 获取指定索引号的记录  从recordIndex + 1开始提取记录， 直到记录为空为止
-            //5. 通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
-            //经过上面步骤， 整个提取记录的操作完成
-            long firstRecordIndex = 0;  //第一条记录索引号
-            long lastRecordIndex = 0;   //最后一条记录索引号
+            //1.9	Extract Record Operation
+            //1. Pass. 0xB0Command Fetch the earliest record index
+            //2. Pass. 0xB0Command Get Last Record Index
+            //3. Pass. 0xB4Command Get read record index numbers recordIndex
+            //4. Pass. 0xB0Command Get a record of the given index number  FromrecordIndex + 1Start extracting records， Until the records are empty.
+            //5. Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
+            //After the top steps,， The entire extraction record is complete.
+            long firstRecordIndex = 0;  //First record index number
+            long lastRecordIndex = 0;   //Last record index number.
             long recordIndexGotToRead = 0x0;
             long recordIndexToGet = 0;
-            log("1.9 提取记录操作	 开始...[1024字节指令]");
+            log("1.9 Extract Record Operation	 Start...[1024Byte Command]");
             pkt.Reset();
-            pkt.functionID = 0xB0;//取最早的一条记录索引
+            pkt.functionID = 0xB0;//Take the earliest record index
             recordIndexToGet = 0x0;
             LongToBytes(ref pkt.data, 0, recordIndexToGet);
             ret = pkt.run_CBC(commPassword, IV);
@@ -1447,12 +1447,12 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 firstRecordIndex = (int)byteToLong(pkt.recv, 8, 4);
-                log(" 获取最早一条记录索引	 =" + firstRecordIndex.ToString());
+                log(" Fetch the earliest record index	 =" + firstRecordIndex.ToString());
             }
             if (ret > 0)
             {
                 pkt.Reset();
-                pkt.functionID = 0xB0;//取最后的一条记录索引
+                pkt.functionID = 0xB0;//Take Last Record Index
                 recordIndexToGet = 0xffffffff;
                 LongToBytes(ref pkt.data, 0, recordIndexToGet);
                 ret = pkt.run_CBC(commPassword, IV); 
@@ -1460,13 +1460,13 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 lastRecordIndex = (int)byteToLong(pkt.recv, 8, 4);
-                log(" 获取最后一条记录索引	  =" + lastRecordIndex.ToString());
+                log(" Get Last Record Index	  =" + lastRecordIndex.ToString());
             }
 
             if (ret > 0)
             {
                 pkt.Reset();
-                pkt.functionID = 0xB4;//获取已读取过的记录索引号
+                pkt.functionID = 0xB4;//Get read record index numbers
                 recordIndexToGet = 0x0;
                 LongToBytes(ref pkt.data, 0, recordIndexToGet);
                 ret = pkt.run_CBC(commPassword, IV);
@@ -1474,16 +1474,16 @@ namespace WGController32_CSharp
             if (ret > 0)
             {
                 recordIndexGotToRead = (int)byteToLong(pkt.recv, 8, 4);
-                log("获取已读取过的记录索引号	  =" + recordIndexGotToRead.ToString());
+                log("Get read record index numbers	  =" + recordIndexGotToRead.ToString());
             }
             long validRecordsCount = 0;
-            //recordIndexGotToRead = 0;  //2015-11-05 21:31:05 强制取所有记录
+            //recordIndexGotToRead = 0;  //2015-11-05 21:31:05 Force all records
             if (ret > 0)
             {
                 long recordIndexValidGet = 0;
 
-                long recordIndexToGetStart = recordIndexGotToRead + 1;  //准备要提取的记录索引位
-                if (recordIndexGotToRead > lastRecordIndex || recordIndexGotToRead < firstRecordIndex) //超过范围 取第一个记录的索引号
+                long recordIndexToGetStart = recordIndexGotToRead + 1;  //Prepare record index to extract
+                if (recordIndexGotToRead > lastRecordIndex || recordIndexGotToRead < firstRecordIndex) //Beyond range Take index number for the first record
                 {
                     recordIndexToGetStart = firstRecordIndex;
                 }
@@ -1497,7 +1497,7 @@ namespace WGController32_CSharp
                 {
                     for (int j = 0; j < 1024; j++)
                     {
-                        command1024[j] = 0; //复位
+                        command1024[j] = 0; //Restore
                     }
                     recordIndexCurrent = recordIndexToGetStart;
                     for (int j = 0; j < 1024; j = j + 64)
@@ -1516,21 +1516,21 @@ namespace WGController32_CSharp
                         {
                             success = 0;
 
-                            //12	记录类型
-                            //0=无记录
-                            //1=刷卡记录
-                            //2=门磁,按钮, 设备启动, 远程开门记录
-                            //3=报警记录	1	
-                            //0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+                            //12	Record type
+                            //0=No record
+                            //1=Brush Card Record
+                            //2=Door Magnetic,button, Device startup, Remote Open Record
+                            //3=Call the police.	1	
+                            //0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
                             byte[] recv = new byte[64];
                             Array.Copy(pkt.recv, j, recv, 0, 64);
                             int recordType = recv[12];
                             if (recordType == 0)
                             {
                                 success = 2;
-                                break; //没有更多记录
+                                break; //No more records.
                             }
-                            if (recordType == 0xff)//此索引号无效
+                            if (recordType == 0xff)//This index number is invalid
                             {
                                 success = 0;
                                 break;
@@ -1540,23 +1540,23 @@ namespace WGController32_CSharp
                             recordIndexCurrent++;
                             validRecordsCount++;
                             //
-                            if (validRecordsCount < 100) //2015-11-05 14:59:20显示前100个, 太多显示处理速度慢 不作分析了...
+                            if (validRecordsCount < 100) //2015-11-05 14:59:20Show Before100individual, Too much shows slow processing. No analysis....
                             {
                                 displayRecordInformation(recv); //2015-06-09 20:01:21
                                 if (validRecordsCount == 99)
                                 {
-                                    log(" 为加快提取速度, 超过100个的  不再显示记录信息.......");
+                                    log(" To speed up extraction, Over100Shit.  Do not display recording information again.......");
                                     Application.DoEvents();
                                 }
                             }
-                            //.......对收到的记录作存储处理
+                            //.......Storage of records received
                             //*****
                             //###############
                         }
                     }
                     else
                     {
-                        //提取失败
+                        //Ripping failed
                         break;
                     }
                     if (success != 1)
@@ -1565,15 +1565,15 @@ namespace WGController32_CSharp
                     }
                 } while (cnt < 200000);
 
-                log("1.9 完全提取成功	 ... 有效记录数= " + validRecordsCount.ToString());
+                log("1.9 Full extraction successful.	 ... Number of valid records= " + validRecordsCount.ToString());
                 if ((success > 0) && validRecordsCount > 0)
                 {
-                    //通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+                    //Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
                     pkt.Reset();
                     pkt.functionID = 0xB2;
                     LongToBytes(ref pkt.data, 0, recordIndexValidGet);
 
-                    //12	标识(防止误设置)	1	0x55 [固定]
+                    //12	Identification(Prevent Error Settings)	1	0x55 [Fixed]
                     LongToBytes(ref pkt.data, 4, WGPacketShort.SpecialFlag);
 
                     ret = pkt.run_CBC(commPassword, IV);
@@ -1582,8 +1582,8 @@ namespace WGController32_CSharp
                     {
                         if (pkt.recv[8] == 1)
                         {
-                            //完全提取成功....
-                            log("1.9 完全提取成功	 成功...");
+                            //Full extraction successful.....
+                            log("1.9 Full extraction successful.	 Success...");
                             success = 1;
                         }
                     }
@@ -1592,16 +1592,16 @@ namespace WGController32_CSharp
             }
 
 
-            //1.21	权限按从小到大顺序添加[功能号: 0x56] 适用于权限数过1000, 少于8万 **********************************************************************************
-            //此功能实现 完全更新全部权限, 用户不用清空之前的权限. 只是将上传的权限顺序从第1个依次到最后一个上传完成. 如果中途中断的话, 仍以原权限为主
-            //建议权限数更新超过50个, 即可使用此指令
-            //如果权限数超过8万时, 中途中断的话, 权限会为空. 所以要上传完整
+            //1.21	Permissions added from childhood to larger[Function Number: 0x56] Applies to privileges1000, Less810,000 **********************************************************************************
+            //This feature achieves Fully update all permissions, User does not have to empty permissions before. Just order the upload permissions from the first1In turn to last upload complete. If you interrupt., Still with the original authority.
+            //Suggested number of privileges updated over50individual, Use this command
+            //If the number of privileges exceeds8As soon as possible., If you interrupt., Permissions will be empty. That's why we have to upload the whole thing.
 
-            log("1.21	权限按从小到大顺序添加[功能号: 0x56]	开始...[采用1024字节指令, 每次上传16个权限]");
+            log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	Start...[Adopt1024Byte Command, Every upload16Permissions]");
 
-            //以10000个卡号为例, 此处简化的排序, 直接是以50001开始的10000个卡. 用户按照需要将要上传的卡号排序存放
-            int cardCount = 1 * 10000; // 10000;  //2015-06-09 20:20:20 卡总数量
-            log(string.Format("       {0}万条权限...", cardCount / 10000));
+            //Here.10000A card number is an example., Simplicit Sorting Here, Directly by50001Started.10000A card.. Store according to the number of card to be uploaded as required
+            int cardCount = 1 * 10000; // 10000;  //2015-06-09 20:20:20 Total number of cards
+            log(string.Format("       {0}Thousand powers...", cardCount / 10000));
             long[] cardArray = new long[cardCount];
             for (int i = 0; i < cardCount; i++)
             {
@@ -1613,7 +1613,7 @@ namespace WGController32_CSharp
             {
                 for (int j = 0; j < 1024; j++)
                 {
-                    command1024[j] = 0; //复位
+                    command1024[j] = 0; //Restore
                 }
 
                 for (int j = 0; j < 1024; j = j + 64)
@@ -1629,28 +1629,28 @@ namespace WGController32_CSharp
                     cardNOOfPrivilegeToGetlast = cardNOOfPrivilege;
                     LongToBytes(ref pkt.data, 0, cardNOOfPrivilege);
 
-                    //其他参数简化时 统一, 可以依据每个卡的不同进行修改
-                    //20 10 01 01 起始日期:  2010年01月01日   (必须大于2001年)
+                    //When other parameters are simplified Harmonization, You can make changes depending on each card.
+                    //20 10 01 01 Start date:  2010Year01Month01Day   (Must be greater than2001Year)
                     pkt.data[4] = 0x20;
                     pkt.data[5] = 0x10;
                     pkt.data[6] = 0x01;
                     pkt.data[7] = 0x01;
-                    //20 29 12 31 截止日期:  2029年12月31日
+                    //20 29 12 31 Deadline:  2029Year12Month31Day
                     pkt.data[8] = 0x20;
                     pkt.data[9] = 0x29;
                     pkt.data[10] = 0x12;
                     pkt.data[11] = 0x31;
-                    //01 允许通过 一号门 [对单门, 双门, 四门控制器有效] 
+                    //01 Allow Pass Door one. [Single door., Double door., Four controllers working.] 
                     pkt.data[12] = 0x01;
-                    //01 允许通过 二号门 [对双门, 四门控制器有效]
-                    pkt.data[13] = 0x01;  //如果禁止2号门, 则只要设为 0x00
-                    //01 允许通过 三号门 [对四门控制器有效]
+                    //01 Allow Pass Door two. [Two doors., Four controllers working.]
+                    pkt.data[13] = 0x01;  //If it's forbidden,2Door., As 0x00
+                    //01 Allow Pass Gate three. [It works on four controllers.]
                     pkt.data[14] = 0x01;
-                    //01 允许通过 四号门 [对四门控制器有效]
+                    //01 Allow Pass Gate four. [It works on four controllers.]
                     pkt.data[15] = 0x01;
 
-                    LongToBytes(ref pkt.data, 32 - 8, cardCount); //总的权限数
-                    LongToBytes(ref pkt.data, 35 - 8, i + 1);//当前权限的索引位(从1开始)
+                    LongToBytes(ref pkt.data, 32 - 8, cardCount); //Total permissions
+                    LongToBytes(ref pkt.data, 35 - 8, i + 1);//The index place for the current permission(From1Start)
 
                     byte[] cmd = pkt.toByte();
                     Array.Copy(cmd, 0, command1024, j, 64);
@@ -1667,7 +1667,7 @@ namespace WGController32_CSharp
                     }
                     if (pkt.recv[8] == 0xE1)
                     {
-                        log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 =0xE1 表示卡号没有从小到大排序...???");
+                        log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 =0xE1 Which means the card number has not been sorted from a small to a large size....???");
                         success = 0;
                         break;
                     }
@@ -1679,42 +1679,42 @@ namespace WGController32_CSharp
             }
             if (success == 1)
             {
-                log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 成功...");
+                log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 Success...");
             }
             else
             {
-                log("1.21	权限按从小到大顺序添加[功能号: 0x56]	 失败...????");
+                log("1.21	Permissions added from childhood to larger[Function Number: 0x56]	 Failed...????");
             }
-            //1.16  获取指定索引号的权限[功能号: 0x5C] **********************************************************************************
-            //演示1024字节 加密操作...
+            //1.16  Access to specified index numbers[Function Number: 0x5C] **********************************************************************************
+            //Presentation1024Bytes Encryption Operations...
             //byte[] command1024 = new byte[1024];
             //long cardNOOfPrivilegeToGetlast = 0;
 
-            //读取所有权限
+            //Read All Permissions
             pkt.Reset();
             pkt.functionID = 0x5C;
             pkt.iDevSn = controllerSN;
             long maxCount = 20 * 10000;
             long[] cardArrayGet = new long[maxCount];
-            long QueryIndex = 1; //索引号(从1开始);
+            long QueryIndex = 1; //Index number(From1Start);
             LongToBytes(ref pkt.data, 0, QueryIndex);
 
             for (int i = 0; i < maxCount; i++)
             {
                 cardArrayGet[i] = 0;
             }
-            log("读取所有权限	 开始...[1024字节指令]");
+            log("Read All Permissions	 Start...[1024Byte Command]");
             long iCount = 0;
             for (int i = 0; i < maxCount; i++)
             {
                 for (int j = 0; j < 1024; j++)
                 {
-                    command1024[j] = 0; //复位
+                    command1024[j] = 0; //Restore
                 }
                 for (int j = 0; j < 1024; j = j + 64)
                 {
                     LongToBytes(ref pkt.data, 0, QueryIndex);
-                    QueryIndex++; //索引号(从1开始);
+                    QueryIndex++; //Index number(From1Start);
                     byte[] cmd = pkt.toByte();
                     Array.Copy(cmd, 0, command1024, j, 64);
 
@@ -1728,23 +1728,23 @@ namespace WGController32_CSharp
                         success = 0;
                         long cardNOOfPrivilegeToGet = 0;
                         cardNOOfPrivilegeToGet = byteToLong(pkt.recv, 8 + j, 4);
-                        if (4294967295 == cardNOOfPrivilegeToGet) //FFFFFFFF对应于4294967295
+                        if (4294967295 == cardNOOfPrivilegeToGet) //FFFFFFFFResponse4294967295
                         {
                             success = 1;
-                            //log("1.16      没有权限信息: (权限已删除)");
+                            //log("1.16      Can not open message: (Permissions deleted)");
                             //break;
                         }
                         else if (cardNOOfPrivilegeToGet == 0)
                         {
-                            //没有权限时: (卡号部分为0)
-                            //log("1.16       没有权限信息: (卡号部分为0)--此索引号之后没有权限了");
+                            //When no permission: (The card number is0)
+                            //log("1.16       Can not open message: (The card number is0)--This index number is no longer valid.");
                             break;
                         }
                         else
                         {
-                            //具体权限信息...
-                            //  log("1.16      有权限信息...");
-                            // log("1.16 获取指定索引号的权限	 成功...");
+                            //Specific Permission Information...
+                            //  log("1.16      Can not open message...");
+                            // log("1.16 Access to specified index numbers	 Success...");
                             cardArrayGet[iCount] = cardNOOfPrivilegeToGet;
                             iCount++;
                             success = 1;
@@ -1759,19 +1759,19 @@ namespace WGController32_CSharp
                 }
                 else
                 {
-                    log("1.16     有问题..." + ret.ToString());
+                    log("1.16     Problem...." + ret.ToString());
                     break;
                 }
             }
-            log("最后读取到的权限的卡号 = " + cardNOOfPrivilegeToGetlast.ToString());
-            log("提取到的权限数iCount = " + iCount.ToString());  //2015-11-04 19:59:50 提取权限数
+            log("Last read permission card number = " + cardNOOfPrivilegeToGetlast.ToString());
+            log("Permissions extractediCount = " + iCount.ToString());  //2015-11-04 19:59:50 Extract permissions
 
-            //清空通信密码[功能号: 0xE2] **********************************************************************************
+            //Clear the code.[Function Number: 0xE2] **********************************************************************************
             pkt.Reset();
             pkt.functionID = 0xE2;
-            //防止误操作标识
+            //Ideas against error
             Array.Copy(System.BitConverter.GetBytes(WGPacketShort.SpecialFlag), 0, pkt.data, 0, 4);
-            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00 清空密码
+            for (int i = 0; i < 16; i++)  //2015-11-02 10:21:00 Empty Password
             {
                 pkt.data[4 + i] = 0;
                 pkt.data[36 + i] = 0;
@@ -1780,20 +1780,20 @@ namespace WGController32_CSharp
             ret = pkt.run_CBC(commPassword, IV);
             if ((ret > 0) && (pkt.recv[8] == 1))
             {
-                log("通信密码清空成功...[通过加密通信操作]");
+                log("Communication code emptied....[Can not open message]");
                 success = 1;
             }
             else
             {
-                log("通信密码清空失败...[通过加密通信操作]");
+                log("Communication password emptied...[Can not open message]");
             }
 
 
 
             // **********************************************************************************
 
-            //结束  **********************************************************************************
-            pkt.close();  //关闭通信
+            //End  **********************************************************************************
+            pkt.close();  //Close communications
             // return success;
         }
 

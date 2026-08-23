@@ -9,9 +9,9 @@ Begin VB.Form Form1
    LinkTopic       =   "Form1"
    ScaleHeight     =   10935
    ScaleWidth      =   8745
-   StartUpPosition =   3  '窗口缺省
+   StartUpPosition =   3  'Window Default
    Begin VB.CommandButton Command2 
-      Caption         =   "2 1024-Bytes Command (1024字节指令实现 提取记录 上传权限 读取权限)"
+      Caption         =   "2 1024-Bytes Command (1024Byte Command Achieved Ripping records Upload Permissions Read Permissions)"
       Height          =   375
       Left            =   720
       TabIndex        =   6
@@ -90,62 +90,62 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '/**
-'* WGBasicTestVB 2015-04-29 20:41:30 karl CSN 陈绍宁 $
+'* WGBasicTestVB 2015-04-29 20:41:30 karl CSN Chan Shonin $
 '*
-'* 门禁控制器 短报文协议 测试案例
-'* V1.4 版本  2014-09-20 18:04:38
-'*            主要使用 Winsock 控件来完成 [Mswinsck.ocx   Microsoft Winsock Control 6.0 (SP6)]
-'*            基本功能:  查询控制器状态
-'*                       读取日期时间
-'*                       设置日期时间
-'*                       获取指定索引号的记录
-'*                       设置已读取过的记录索引号
-'*                       获取已读取过的记录索引号
-'*                       远程开门
-'*                       权限添加或修改
-'*                       权限删除(单个删除)
-'*                       权限清空(全部清掉)
-'*                       权限总数读取
-'*                       权限查询
-'*                       设置门控制参数(在线/延时)
-'*                       读取门控制参数(在线/延时)
+'* Doorbar controller Shortcast agreement Test cases
+'* V1.4 Version  2014-09-20 18:04:38
+'*            Main use Winsock Control to complete [Mswinsck.ocx   Microsoft Winsock Control 6.0 (SP6)]
+'*            Basic functions:  Query controller status
+'*                       Read Date Time
+'*                       Set Date Time
+'*                       Get a record of the given index number
+'*                       Set a read record index number
+'*                       Get read record index numbers
+'*                       Open remote
+'*                       Permissions to add or modify
+'*                       Permission to delete(Individual Delete)
+'*                       Clear Permissions(Clear it all.)
+'*                       Total Permissions Read
+'*                       Permission Query
+'*                       Set door control parameters(Online/Delay)
+'*                       Read door control parameters(Online/Delay)
 '
-'*                       设置接收服务器的IP和端口
-'*                       读取接收服务器的IP和端口
+'*                       Set up the receiver serverIPand Port
+'*                       Read the receiver server.IPand Port
 '*
 '*
-'*                       接收服务器的实现 (在61005端口接收数据) -- 此项功能 一定要注意防火墙设置 必须是允许接收数据的.
-'* V2.5 版本  2015-04-29 20:41:30 采用 V6.56驱动版本 型号由0x19改为0x17
+'*                       Receiving server realization (Yes.61005Port Reception Data) -- This function Be careful with the firewall. It has to be allowed to receive data..
+'* V2.5 Version  2015-04-29 20:41:30 Adopt V6.56Driver Version Model by0x19For0x17
 '*
-'* V2.6 版本  2015-11-03 20:25:53 V6.60驱动版本 增加 通信密码测试, 1024字节用于权限上传和记录提取操作
-'*                               修改通信的重试操作
+'* V2.6 Version  2015-11-03 20:25:53 V6.60Driver Version Increase Communications password testing, 1024Bytes for permission upload and log extraction operations
+'*                               Retry to modify communication
 '*
 '*/
 
 
-Private sendSequenceId As Long       '发送指令的流水号
+Private sendSequenceId As Long       'The current number that sent the command.
 
-Const WGPacketSize = 64              '报文长度
-Const WGPacketType = &H17            '类型
-Const ControllerPort = 60000         '控制器端口
-Const SpecialFlag = &H55AAAA55       '特殊标识 防止误操作
+Const WGPacketSize = 64              'Length of submission
+Const WGPacketType = &H17            'Type
+Const ControllerPort = 60000         'controller port
+Const SpecialFlag = &H55AAAA55       'Special identification Prevent mishandling
 
-Private buff(63) As Byte             '数据接收缓冲区(64字节)
-Private buff1024(1024) As Byte             '2015-11-07 21:31:06 数据接收缓冲区(1024字节)
+Private buff(63) As Byte             'Data reception buffer(64Bytes)
+Private buff1024(1024) As Byte             '2015-11-07 21:31:06 Data reception buffer(1024Bytes)
 
-Private watchingrecordIndex As Long  '服务器监控时处理的记录索引号
+Private watchingrecordIndex As Long  'Index numbers of records processed during server surveillance
  
- '记录原因 (类型中 SwipePass 表示通过; SwipeNOPass表示禁止通过; ValidEvent 有效事件(如按钮 门磁 超级密码开门); Warn 报警事件)
+ 'Record cause (Type SwipePass Adopted; SwipeNOPassMeans no pass.; ValidEvent Effective Event(Like buttons Door Magnetic Supercode open.); Warn Call the police.)
 Private RecordDetails()
 
-'发送数据包/接收数据包
+'Sending package/Packets received
 Private Function pktrun(ByRef ASendBuff() As Byte, ByRef BReceiveBuff() As Byte, Optional ByVal timeoutMs As Integer = 400) As Integer
     Dim tries As Integer
     Dim ret As Integer
 
     ret = arrayReset(BReceiveBuff, WGPacketSize)
     sendSequenceId = sendSequenceId + 1
-    ret = IntToByte(sendSequenceId, ASendBuff, 40, 4) '序号
+    ret = IntToByte(sendSequenceId, ASendBuff, 40, 4) 'Serial number
     tries = 3
     ret = -1
     Dim doeventCount As Integer
@@ -158,7 +158,7 @@ Private Function pktrun(ByRef ASendBuff() As Byte, ByRef BReceiveBuff() As Byte,
         Sleep (1)
             If (Me.Winsock1.BytesReceived = WGPacketSize) Then
                 Me.Winsock1.GetData BReceiveBuff, vbArray + vbByte, WGPacketSize
-                '检查类型, 功能号, 流水号要一致
+                'Type of inspection, Function Number, The current must be consistent.
                 If ((ASendBuff(0) = BReceiveBuff(0)) And (ASendBuff(1) = BReceiveBuff(1)) And (ASendBuff(40) = BReceiveBuff(40)) And (ASendBuff(41) = BReceiveBuff(41)) And (ASendBuff(42) = BReceiveBuff(42)) And (ASendBuff(43) = BReceiveBuff(43))) Then
                     ret = 1
                     Exit Do
@@ -171,7 +171,7 @@ Private Function pktrun(ByRef ASendBuff() As Byte, ByRef BReceiveBuff() As Byte,
                  DoEvents
                End If
             End If
-        Loop Until GetTickCount - T >= timeoutMs  '缺省400ms超时
+        Loop Until GetTickCount - T >= timeoutMs  'Defaults400msTimeout
 
         If (ret > 0) Then
             Exit Do
@@ -189,15 +189,15 @@ Private Function pktrun(ByRef ASendBuff() As Byte, ByRef BReceiveBuff() As Byte,
     pktrun = ret
 End Function
 
-'2015-11-02 14:39:36 引入 短报文通信密码 操作
+'2015-11-02 14:39:36 Introduction Fax code Operation
 Private Function pktrunWithPassword(ByRef ASendBuff() As Byte, ByRef BReceiveBuff() As Byte, ByRef password() As Byte, Optional ByVal timeoutMs As Integer = 400) As Integer
     Dim tries As Integer
     Dim ret As Integer
 
     ret = arrayReset(BReceiveBuff, WGPacketSize)
     sendSequenceId = sendSequenceId + 1
-    ret = IntToByte(sendSequenceId, ASendBuff, 40, 4) '序号
- '备份
+    ret = IntToByte(sendSequenceId, ASendBuff, 40, 4) 'Serial number
+ 'Backup
     Dim cmdtype As Byte
     Dim cmdId As Byte
     cmdtype = ASendBuff(0)
@@ -233,7 +233,7 @@ Private Function pktrunWithPassword(ByRef ASendBuff() As Byte, ByRef BReceiveBuf
                ' j = ShortDecrypt(VarPtr(ASendBuff(0)), VarPtr(password(0)))
                 j = ShortDecrypt(VarPtr(BReceiveBuff(0)), VarPtr(password(0)))
 
-                '检查类型, 功能号, 流水号要一致
+                'Type of inspection, Function Number, The current must be consistent.
               '  If ((ASendBuff(0) = BReceiveBuff(0)) And (ASendBuff(1) = BReceiveBuff(1)) And (ASendBuff(40) = BReceiveBuff(40)) And (ASendBuff(41) = BReceiveBuff(41)) And (ASendBuff(42) = BReceiveBuff(42)) And (ASendBuff(43) = BReceiveBuff(43))) Then
                 If ((cmdtype = BReceiveBuff(0)) And (cmdId = BReceiveBuff(1)) And (ASendBuff40 = BReceiveBuff(40)) And (ASendBuff41 = BReceiveBuff(41)) And (ASendBuff42 = BReceiveBuff(42)) And (ASendBuff43 = BReceiveBuff(43))) Then
                       ret = 1
@@ -247,7 +247,7 @@ Private Function pktrunWithPassword(ByRef ASendBuff() As Byte, ByRef BReceiveBuf
                  DoEvents
                End If
             End If
-        Loop Until GetTickCount - T >= timeoutMs  '缺省400ms超时
+        Loop Until GetTickCount - T >= timeoutMs  'Defaults400msTimeout
 
         If (ret > 0) Then
             Exit Do
@@ -266,7 +266,7 @@ Private Function pktrunWithPassword(ByRef ASendBuff() As Byte, ByRef BReceiveBuf
 End Function
 
 
-'发送数据包/接收数据包 1024字节
+'Sending package/Packets received 1024Bytes
 Private Function pktrun1024(ByRef ASendBuff() As Byte, Optional ByVal timeoutMs As Integer = 1000) As Integer
     Dim tries As Integer
     Dim ret As Integer
@@ -279,7 +279,7 @@ Dim BReceiveBuff() As Byte
     Dim doeventCount As Integer
     doeventCount = 1000
     
-    '备份
+    'Backup
     Dim cmdtype As Byte
     Dim cmdId As Byte
     cmdtype = ASendBuff(0)
@@ -302,7 +302,7 @@ Dim BReceiveBuff() As Byte
         Sleep (1)
             If (Me.Winsock1.BytesReceived = 1024) Then
                Me.Winsock1.GetData BReceiveBuff, vbArray + vbByte, 1024
-                '检查类型, 功能号,
+                'Type of inspection, Function Number,
                 If ((cmdtype = BReceiveBuff(0)) And (cmdId = BReceiveBuff(1)) And (ASendBuff40 = BReceiveBuff(40)) And (ASendBuff41 = BReceiveBuff(41)) And (ASendBuff42 = BReceiveBuff(42)) And (ASendBuff43 = BReceiveBuff(43))) Then
                     ret = 1
                     Exit Do
@@ -315,7 +315,7 @@ Dim BReceiveBuff() As Byte
                  DoEvents
                End If
             End If
-        Loop Until GetTickCount - T >= timeoutMs  '缺省400ms超时
+        Loop Until GetTickCount - T >= timeoutMs  'Defaults400msTimeout
 
         If (ret > 0) Then
             Exit Do
@@ -334,7 +334,7 @@ Dim BReceiveBuff() As Byte
 End Function
 
 
-'发送数据包/接收数据包 1024字节
+'Sending package/Packets received 1024Bytes
 Private Function pktrun1024WithPassword(ByRef ASendBuff() As Byte, ByRef password() As Byte, Optional ByVal timeoutMs As Integer = 1000) As Integer
     Dim tries As Integer
     Dim ret As Integer
@@ -346,7 +346,7 @@ Private Function pktrun1024WithPassword(ByRef ASendBuff() As Byte, ByRef passwor
     Dim doeventCount As Integer
     doeventCount = 1000
     
-    '备份
+    'Backup
     Dim cmdtype As Byte
     Dim cmdId As Byte
     cmdtype = ASendBuff(0)
@@ -380,7 +380,7 @@ Private Function pktrun1024WithPassword(ByRef ASendBuff() As Byte, ByRef passwor
     
                 Next i
 
-                '检查类型, 功能号,
+                'Type of inspection, Function Number,
                 If ((cmdtype = BReceiveBuff(0)) And (cmdId = BReceiveBuff(1)) And (ASendBuff40 = BReceiveBuff(40)) And (ASendBuff41 = BReceiveBuff(41)) And (ASendBuff42 = BReceiveBuff(42)) And (ASendBuff43 = BReceiveBuff(43))) Then
                     ret = 1
                     Exit Do
@@ -393,7 +393,7 @@ Private Function pktrun1024WithPassword(ByRef ASendBuff() As Byte, ByRef passwor
                  DoEvents
                End If
             End If
-        Loop Until GetTickCount - T >= timeoutMs  '缺省400ms超时
+        Loop Until GetTickCount - T >= timeoutMs  'Defaults400msTimeout
 
         If (ret > 0) Then
             Exit Do
@@ -411,17 +411,17 @@ Private Function pktrun1024WithPassword(ByRef ASendBuff() As Byte, ByRef passwor
     pktrun1024WithPassword = ret
 End Function
 
-'记录信息
+'Record information
 Private Function log(ByVal info As String)
     'Me.Text1.Text = Me.Text1.Text & info & vbCrLf
     Me.Text1.Text = Me.Text1.Text & Time() & " " & info & vbCrLf
     Text1.SelLength = 1
-    Text1.SelStart = Len(Text1.Text) '保持在最后一行
+    Text1.SelStart = Len(Text1.Text) 'Keep in the last line
     log = Me.Text1.Text
 End Function
 
 
-'实际获取到的数据
+'Data actually obtained
 Private Sub getReceiveBuffData(ByRef BReceiveBuff() As Byte)
     Dim i As Integer
     For i = 0 To WGPacketSize - 1
@@ -436,7 +436,7 @@ Private Sub getReceiveBuffData1024(ByRef BReceiveBuff() As Byte)
     Next i
 End Sub
 
-'按钮事件
+'Button Events
 Private Sub Command1_Click()
     Dim controllerSN As Long
     Dim ControllerIP As String
@@ -444,12 +444,12 @@ Private Sub Command1_Click()
     Dim watchServerPort As Long
 
 
-    '    '本案例未作搜索控制器  及 设置IP的工作  (直接由IP设置工具来完成)
-    '    '本案例中测试说明
-    '    '控制器SN  = 229999901
-    '    '控制器IP  = 192.168.168.123
-    '    '电脑  IP  = 192.168.168.101
-    '    '用于作为接收服务器的IP (本电脑IP 192.168.168.101), 接收服务器端口 (61005)
+    '    'No search controller in this case  and SettingsIPWork  (Directly byIPSet tools to complete)
+    '    'Test instructions in this case
+    '    'controllerSN  = 229999901
+    '    'controllerIP  = 192.168.168.123
+    '    'Computer  IP  = 192.168.168.101
+    '    'For receiving serverIP (This computer.IP 192.168.168.101), Receive Server Port (61005)
 
     controllerSN = Me.txtSN.Text ' 229999901
     ControllerIP = Me.txtIP.Text '"192.168.168.123"
@@ -459,117 +459,117 @@ Private Sub Command1_Click()
     log ("controllerIP = " & ControllerIP)
     log (vbCrLf)
 
- '记录原因 (类型中 SwipePass 表示通过; SwipeNOPass表示禁止通过; ValidEvent 有效事件(如按钮 门磁 超级密码开门); Warn 报警事件)
-    '代码  类型   英文描述  中文描述
-     RecordDetails = Array("1", "SwipePass", "Swipe", "刷卡开门", "2", "SwipePass", "Swipe Close", "刷卡关", "3", "SwipePass", "Swipe Open", "刷卡开", "4", "SwipePass", "Swipe Limited Times", "刷卡开门(带限次)", _
-"5", "SwipeNOPass", "Denied Access: PC Control", "刷卡禁止通过: 电脑控制", "6", "SwipeNOPass", "Denied Access: No PRIVILEGE", "刷卡禁止通过: 没有权限", "7", "SwipeNOPass", "Denied Access: Wrong PASSWORD", "刷卡禁止通过: 密码不对", "8", "SwipeNOPass", "Denied Access: AntiBack", "刷卡禁止通过: 反潜回", _
-"9", "SwipeNOPass", "Denied Access: More Cards", "刷卡禁止通过: 多卡", "10", "SwipeNOPass", "Denied Access: First Card Open", "刷卡禁止通过: 首卡", "11", "SwipeNOPass", "Denied Access: Door Set NC", "刷卡禁止通过: 门为常闭", "12", "SwipeNOPass", "Denied Access: InterLock", "刷卡禁止通过: 互锁", _
-"13", "SwipeNOPass", "Denied Access: Limited Times", "刷卡禁止通过: 受刷卡次数限制", "14", "SwipeNOPass", "Denied Access: Limited Person Indoor", "刷卡禁止通过: 门内人数限制", "15", "SwipeNOPass", "Denied Access: Invalid Timezone", "刷卡禁止通过: 卡过期或不在有效时段", "16", "SwipeNOPass", "Denied Access: In Order", "刷卡禁止通过: 按顺序进出限制", _
-"17", "SwipeNOPass", "Denied Access: SWIPE GAP LIMIT", "刷卡禁止通过: 刷卡间隔约束", "18", "SwipeNOPass", "Denied Access", "刷卡禁止通过: 原因不明", "19", "SwipeNOPass", "Denied Access: Limited Times", "刷卡禁止通过: 刷卡次数限制", "20", "ValidEvent", "Push Button", "按钮开门", _
-"21", "ValidEvent", "Push Button Open", "按钮开", "22", "ValidEvent", "Push Button Close", "按钮关", "23", "ValidEvent", "Door Open", "门打开[门磁信号]", "24", "ValidEvent", "Door Closed", "门关闭[门磁信号]", _
-"25", "ValidEvent", "Super Password Open Door", "超级密码开门", "26", "ValidEvent", "Super Password Open", "超级密码开", "27", "ValidEvent", "Super Password Close", "超级密码关", "28", "Warn", "Controller Power On", "控制器上电", _
-"29", "Warn", "Controller Reset", "控制器复位", "30", "Warn", "Push Button Invalid: Disable", "按钮不开门: 按钮禁用", "31", "Warn", "Push Button Invalid: Forced Lock", "按钮不开门: 强制关门", "32", "Warn", "Push Button Invalid: Not On Line", "按钮不开门: 门不在线", _
-"33", "Warn", "Push Button Invalid: InterLock", "按钮不开门: 互锁", "34", "Warn", "Threat", "胁迫报警", "35", "Warn", "Threat Open", "胁迫报警开", "36", "Warn", "Threat Close", "胁迫报警关", _
-"37", "Warn", "Open too long", "门长时间未关报警[合法开门后]", "38", "Warn", "Forced Open", "强行闯入报警", "39", "Warn", "Fire", "火警", "40", "Warn", "Forced Close", "强制关门", _
-"41", "Warn", "Guard Against Theft", "防盗报警", "42", "Warn", "7*24Hour Zone", "烟雾煤气温度报警", "43", "Warn", "Emergency Call", "紧急呼救报警", "44", "RemoteOpen", "Remote Open Door", "操作员远程开门", _
-"45", "RemoteOpen", "Remote Open Door By USB Reader", "发卡器确定发出的远程开门")
+ 'Record cause (Type SwipePass Adopted; SwipeNOPassMeans no pass.; ValidEvent Effective Event(Like buttons Door Magnetic Supercode open.); Warn Call the police.)
+    'Code  Type   English Description  Chinese Description
+     RecordDetails = Array("1", "SwipePass", "Swipe", "Open the swipe.", "2", "SwipePass", "Swipe Close", "Brush off", "3", "SwipePass", "Swipe Open", "Open it.", "4", "SwipePass", "Swipe Limited Times", "Open the swipe.(Time limit)", _
+"5", "SwipeNOPass", "Denied Access: PC Control", "It's forbidden to pass.: Computer control", "6", "SwipeNOPass", "Denied Access: No PRIVILEGE", "It's forbidden to pass.: No Permissions", "7", "SwipeNOPass", "Denied Access: Wrong PASSWORD", "It's forbidden to pass.: Wrong password.", "8", "SwipeNOPass", "Denied Access: AntiBack", "It's forbidden to pass.: Backwards", _
+"9", "SwipeNOPass", "Denied Access: More Cards", "It's forbidden to pass.: Doc!", "10", "SwipeNOPass", "Denied Access: First Card Open", "It's forbidden to pass.: First Card", "11", "SwipeNOPass", "Denied Access: Door Set NC", "It's forbidden to pass.: It's always closed.", "12", "SwipeNOPass", "Denied Access: InterLock", "It's forbidden to pass.: Interlock", _
+"13", "SwipeNOPass", "Denied Access: Limited Times", "It's forbidden to pass.: Limited number of brush cards", "14", "SwipeNOPass", "Denied Access: Limited Person Indoor", "It's forbidden to pass.: Number of people in the door", "15", "SwipeNOPass", "Denied Access: Invalid Timezone", "It's forbidden to pass.: Card expired or not valid", "16", "SwipeNOPass", "Denied Access: In Order", "It's forbidden to pass.: Ordered access restrictions", _
+"17", "SwipeNOPass", "Denied Access: SWIPE GAP LIMIT", "It's forbidden to pass.: Brush Card Interval", "18", "SwipeNOPass", "Denied Access", "It's forbidden to pass.: Reason unknown.", "19", "SwipeNOPass", "Denied Access: Limited Times", "It's forbidden to pass.: Limit number of brushes", "20", "ValidEvent", "Push Button", "Button open.", _
+"21", "ValidEvent", "Push Button Open", "Button On", "22", "ValidEvent", "Push Button Close", "Button Off", "23", "ValidEvent", "Door Open", "Open the door.[Door Magnetic Signal]", "24", "ValidEvent", "Door Closed", "Door closed.[Door Magnetic Signal]", _
+"25", "ValidEvent", "Super Password Open Door", "Supercode open.", "26", "ValidEvent", "Super Password Open", "Supercode open.", "27", "ValidEvent", "Super Password Close", "Super Password Level", "28", "Warn", "Controller Power On", "Power on the controller.", _
+"29", "Warn", "Controller Reset", "Control Reposition", "30", "Warn", "Push Button Invalid: Disable", "Buttons don't open.: button disabled", "31", "Warn", "Push Button Invalid: Forced Lock", "Buttons don't open.: Force the closing.", "32", "Warn", "Push Button Invalid: Not On Line", "Buttons don't open.: The door's offline.", _
+"33", "Warn", "Push Button Invalid: InterLock", "Buttons don't open.: Interlock", "34", "Warn", "Threat", "Coercion to the police.", "35", "Warn", "Threat Open", "Coercion to call the police.", "36", "Warn", "Threat Close", "Coercion to alarm.", _
+"37", "Warn", "Open too long", "The door was open for a long time.[After legally opening the door,]", "38", "Warn", "Forced Open", "Forced breaking into the police.", "39", "Warn", "Fire", "Fire!", "40", "Warn", "Forced Close", "Force the closing.", _
+"41", "Warn", "Guard Against Theft", "It's an alarm.", "42", "Warn", "7*24Hour Zone", "Smoke gas temperature alert.", "43", "Warn", "Emergency Call", "Call 911.", "44", "RemoteOpen", "Remote Open Door", "Operator opens the door remotely.", _
+"45", "RemoteOpen", "Remote Open Door By USB Reader", "The transmitter has confirmed the remote opening.")
 
 
 
-    '  采用 UDP 通信
+    '  Adopt UDP Communications
     If (Me.Winsock1.Protocol <> sckUDPProtocol) Then
       Me.Winsock1.Protocol = sckUDPProtocol
     End If
 
-    testBasicFunction ControllerIP, controllerSN   '基本功能测试
+    testBasicFunction ControllerIP, controllerSN   'Basic function test
 End Sub
 
-  ''' 显示记录信息
+  ''' Show Record Information
     ''' </summary>
     ''' <param name="pkt"></param>
     Private Sub displayRecordInformation(ByRef recvbuff() As Byte)
-        '8-11   记录的索引号
-        '(=0表示没有记录)   4   0x00000000
+        '8-11   Record index number
+        '(=0No record.)   4   0x00000000
         Dim recordIndex As Long
          recordIndex = (ByteToLong(recvbuff, 8, 4))
-        '12 记录类型**********************************************
-        '0=无记录
-        '1=刷卡记录
-        '2=门磁,按钮, 设备启动, 远程开门记录
-        '3=报警记录 1
-        '0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+        '12 Record type**********************************************
+        '0=No record
+        '1=Brush Card Record
+        '2=Door Magnetic,button, Device startup, Remote Open Record
+        '3=Call the police. 1
+        '0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
         Dim recordType As Integer
         recordType = recvbuff(12)
-        '13 有效性(0 表示不通过, 1表示通过) 1
+        '13 Validity(0 Not approved, 1Adopted) 1
         Dim recordValid As Integer
         recordValid = recvbuff(13)
-        '14 门号(1,2,3,4)   1
+        '14 Door number.(1,2,3,4)   1
         Dim recordDoorNO As Integer
         recordDoorNO = recvbuff(14)
-        '15 进门/出门(1表示进门, 2表示出门) 1   0x01
+        '15 Come in./Out.(1It means coming in., 2Means out.) 1   0x01
         Dim recordInOrOut As Integer
         recordInOrOut = recvbuff(15)
-        '16-19  卡号(类型是刷卡记录时)
-        '或编号(其他类型记录)   4
+        '16-19  Card(Type is when swiping a card.)
+        'or numbering(Other types of records)   4
         Dim recordCardNO As Double
         recordCardNO = (ByteToDouble(recvbuff, 16, 4))
-        '20-26  刷卡时间:
-        '年月日时分秒 (采用BCD码)见设置时间部分的说明
+        '20-26  Brush Time:
+        'Days and days of year (AdoptBCDCode)See description of the set-up segment
         Dim recordTime As String
         recordTime = "2000-01-01 00:00:00"
         recordTime = getMsDate(recvbuff(20), recvbuff(21), recvbuff(22), recvbuff(23), recvbuff(24), recvbuff(25), recvbuff(26))
 
         '2012.12.11 10:49:59    7
-        '27 记录原因代码(可以查 “刷卡记录说明.xls”文件的ReasonNO)
-        '处理复杂信息才用   1
+        '27 Record cause code(You can check it out. “Checkcard log notes.xls”It's a file.ReasonNO)
+        'It's only for complex information.   1
         Dim Reason As Integer
         Reason = recvbuff(27)
-        '0=无记录
-        '1=刷卡记录
-        '2=门磁,按钮, 设备启动, 远程开门记录
-        '3=报警记录 1
-        '0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+        '0=No record
+        '1=Brush Card Record
+        '2=Door Magnetic,button, Device startup, Remote Open Record
+        '3=Call the police. 1
+        '0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
         If recordType = 0 Then
-            log ("索引位= " & recordIndex & "无记录")
+            log ("Index post= " & recordIndex & "No record")
         ElseIf recordType = 255 Then
-            log (" 指定索引位的记录已被覆盖掉了,请使用索引0, 取回最早一条记录的索引值")
+            log (" The records of the specified index have been overwritten,Use the index.0, Retrieving index values from the earliest record")
         ElseIf recordType = 1 Then
-            '2015-06-10 08:49:31 显示记录类型为卡号的数据
-            '卡号
-            log ("索引位 = " & recordIndex)
-            log ("  卡号 = " & recordCardNO)
-            log ("  门号 = " & recordDoorNO)
-            log ("  进出 = " & IIf(recordInOrOut = 1, "进门", "出门"))
-            log ("  有效 = " & IIf(recordValid = 1, "通过", "禁止"))
-            log ("  时间 = " & recordTime)
-            log ("  原因 = " & getReasonDetailChinese(Reason))
+            '2015-06-10 08:49:31 Show data with card number type of record
+            'Card
+            log ("Index post = " & recordIndex)
+            log ("  Card = " & recordCardNO)
+            log ("  Door number. = " & recordDoorNO)
+            log ("  Access = " & IIf(recordInOrOut = 1, "Come in.", "Out."))
+            log ("  Valid. = " & IIf(recordValid = 1, "Pass.", "Ban"))
+            log ("  Time = " & recordTime)
+            log ("  Reason = " & getReasonDetailChinese(Reason))
         ElseIf recordType = 2 Then
-            '其他处理
-            '门磁,按钮, 设备启动, 远程开门记录
-            log ("索引位 = " & recordIndex & " 非刷卡记录")
-            log ("  编号 = " & recordCardNO)
-            log ("  门号 = " & recordDoorNO)
-            log ("  时间 = " & recordTime)
-            log ("  原因 = " & getReasonDetailChinese(Reason))
+            'Other processing
+            'Door Magnetic,button, Device startup, Remote Open Record
+            log ("Index post = " & recordIndex & " Non-card records")
+            log ("  Numbering = " & recordCardNO)
+            log ("  Door number. = " & recordDoorNO)
+            log ("  Time = " & recordTime)
+            log ("  Reason = " & getReasonDetailChinese(Reason))
         ElseIf recordType = 3 Then
-            '其他处理
-            '报警记录
-            log ("索引位 = " & recordIndex & "  报警记录")
-            log ("  编号 = " & recordCardNO)
-            log ("  门号 = " & recordDoorNO)
-            log ("  时间 = " & recordTime)
-            log ("  原因 = " & getReasonDetailChinese(Reason))
+            'Other processing
+            'Call the police.
+            log ("Index post = " & recordIndex & "  Call the police.")
+            log ("  Numbering = " & recordCardNO)
+            log ("  Door number. = " & recordDoorNO)
+            log ("  Time = " & recordTime)
+            log ("  Reason = " & getReasonDetailChinese(Reason))
         End If
                
-        Text1.SelLength = 1              '显示最后一行
-        Text1.SelStart = Len(Text1.Text) '显示最后一行
+        Text1.SelLength = 1              'Show Last Line
+        Text1.SelStart = Len(Text1.Text) 'Show Last Line
 
     End Sub
     
 
-         '中文信息
+         'Chinese Information
  Private Function getReasonDetailChinese(ByVal Reason As Integer) As String
-        '中文
+        'Chinese
         Dim ret As String
         If Reason > 45 Then
             ret = ""
@@ -581,9 +581,9 @@ End Sub
         End If
           getReasonDetailChinese = ret
     End Function
-        '英文信息
+        'Information in English
     Private Function getReasonDetailEnglish(ByVal Reason As Integer) As String
-        '英文描述
+        'English Description
          If Reason > 45 Then
             ret = ""
          ElseIf Reason <= 0 Then
@@ -594,11 +594,11 @@ End Sub
          getReasonDetailEnglish = ret
     End Function
     
-'ControllerIP 被设置的控制器IP地址
-'controllerSN 被设置的控制器序列号
+'ControllerIP Controls set upIPAddress
+'controllerSN Setd controller serial number
 Private Sub testBasicFunction(ByVal ControllerIP As String, ByVal controllerSN As Long)
-    Dim sendBuff(63) As Byte    '数据发送缓冲区(64字节)
-    Dim recvbuff(63) As Byte     '数据接收缓冲区(64字节)
+    Dim sendBuff(63) As Byte    'Data sent buffer(64Bytes)
+    Dim recvbuff(63) As Byte     'Data reception buffer(64Bytes)
 
     Me.Winsock1.RemoteHost = ControllerIP
     Me.Winsock1.RemotePort = ControllerPort '60000
@@ -606,32 +606,32 @@ Private Sub testBasicFunction(ByVal ControllerIP As String, ByVal controllerSN A
     Dim ret As Integer
     Dim success As Integer
 
-    '控制器相关变量
+    'Control-related variables
     Dim controllerTime As Date
         Dim command1024(1024 - 1)  As Byte
 
                                         
      Dim commPassword(16 - 1) As Byte
      Dim arrcom
-     arrcom = Array(&H11, &H22, &H33, &H44, &H55, &H66, &H77, &H88, &H99, &HAA, &HBB, &HCC, &HDD, &HEE, &HFF, &H0)  '16字节密码
+     arrcom = Array(&H11, &H22, &H33, &H44, &H55, &H66, &H77, &H88, &H99, &HAA, &HBB, &HCC, &HDD, &HEE, &HFF, &H0)  '16Byte Password
         Dim i  As Long
         For i = 0 To 16 - 1
         commPassword(i) = arrcom(i)
         Next i
                                    
-    '设置通信密码[功能号: 0xF0] **********************************************************************************
+    'Set Communications Password[Function Number: 0xF0] **********************************************************************************
     ret = arrayReset(sendBuff, WGPacketSize)
     sendBuff(0) = WGPacketType
     sendBuff(1) = &HF0
-    '防止误操作标识
+    'Ideas against error
     ret = IntToByte(SpecialFlag, sendBuff, 8, 4)
-    For i = 0 To 16 - 1 '2015-11-02 10:21:00设置新密码
+    For i = 0 To 16 - 1 '2015-11-02 10:21:00Set New Password
         sendBuff(12 + i) = commPassword(i)
         sendBuff(44 + i) = commPassword(i)
     Next i
     ret = IntToByte(controllerSN, sendBuff, 4, 4)
     
-       '分两种情况: 密码为空  或者 已设置过密码
+       'In two cases.: Password is empty  Or... Password set
       ret = pktrun(sendBuff(), recvbuff())
             success = 0
        If (ret = 1) Then
@@ -639,29 +639,29 @@ Private Sub testBasicFunction(ByVal ControllerIP As String, ByVal controllerSN A
 
                 If (recvbuff(8) = 1) Then
                 
-                    log ("通信密码设置成功...")
+                    log ("Communication password set successfully...")
                      success = 1
                 End If
        Else
-                ret = pktrunWithPassword(sendBuff(), recvbuff(), commPassword()) '2015-11-02 10:21:22 再尝试控制器已有密码的操作
+                ret = pktrunWithPassword(sendBuff(), recvbuff(), commPassword()) '2015-11-02 10:21:22 Try the password operation for the controller.
                 If (ret = 1) Then
                         getReceiveBuffData recvbuff
                 End If
                 If ((ret > 0) And (recvbuff(8) = 1)) Then
                 
-                    log ("通信密码设置成功...[通过加密通信操作]")
+                    log ("Communication password set successfully...[Can not open message]")
                     success = 1
                 
                 Else
                 
-                    log ("通信密码设置失败...[通过加密通信操作]")
+                    log ("Communication password setup failed...[Can not open message]")
                 End If
        End If
        
    
   
 
-    '1.10  远程开门(功能号: &H40) **********************************************************************************
+    '1.10  Open remote(Function Number: &H40) **********************************************************************************
     ret = arrayReset(sendBuff, WGPacketSize)
     sendBuff(0) = WGPacketType
     sendBuff(1) = &H40
@@ -674,43 +674,43 @@ Private Sub testBasicFunction(ByVal ControllerIP As String, ByVal controllerSN A
         getReceiveBuffData recvbuff
         If (recvbuff(8) = 1) Then
             success = 1
-            '有效开门.....
-             log ("1.10 远程开门  成功...[通过加密通信操作]")
+            'Open the door effectively......
+             log ("1.10 Open remote  Success...[Can not open message]")
              Else
                 
-                    log ("1.10 远程开门   失败...[通过加密通信操作]")
+                    log ("1.10 Open remote   Failed...[Can not open message]")
         End If
      Else
                 
-                    log ("1.10 远程开门   失败...[通过加密通信操作]")
+                    log ("1.10 Open remote   Failed...[Can not open message]")
     End If
 
 
 
-    '清空通信密码[功能号: 0xF0] **********************************************************************************
+    'Clear the code.[Function Number: 0xF0] **********************************************************************************
     ret = arrayReset(sendBuff, WGPacketSize)
     sendBuff(0) = WGPacketType
     sendBuff(1) = &HF0
-    '防止误操作标识
+    'Ideas against error
     ret = IntToByte(SpecialFlag, sendBuff, 8, 4)
-    For i = 0 To 16 - 1 '2015-11-02 10:21:00  清空密码
+    For i = 0 To 16 - 1 '2015-11-02 10:21:00  Empty Password
         sendBuff(12 + i) = 0
         sendBuff(44 + i) = 0
     Next i
     ret = IntToByte(controllerSN, sendBuff, 4, 4)
     
-    ret = pktrunWithPassword(sendBuff(), recvbuff(), commPassword()) '2015-11-02 10:21:22 再尝试控制器已有密码的操作
+    ret = pktrunWithPassword(sendBuff(), recvbuff(), commPassword()) '2015-11-02 10:21:22 Try the password operation for the controller.
     If (ret = 1) Then
             getReceiveBuffData recvbuff
     End If
     If ((ret > 0) And (recvbuff(8) = 1)) Then
     
-        log ("通信密码清空成功...[通过加密通信操作]")
+        log ("Communication code emptied....[Can not open message]")
         success = 1
     
     Else
     
-        log ("通信密码清空失败...[通过加密通信操作]")
+        log ("Communication password emptied...[Can not open message]")
     End If
 
        
@@ -718,18 +718,18 @@ Private Sub testBasicFunction(ByVal ControllerIP As String, ByVal controllerSN A
 
     ' **********************************************************************************
 
-    '结束  **********************************************************************************
+    'End  **********************************************************************************
 
 End Sub
 
 
-'ControllerIP 被设置的控制器IP地址
-'controllerSN 被设置的控制器序列号
-'watchServerIP   要设置的服务器IP
-'watchServerPort 要设置的端口
+'ControllerIP Controls set upIPAddress
+'controllerSN Setd controller serial number
+'watchServerIP   Server to set upIP
+'watchServerPort Port to set up
 Private Sub testWatchingServer(ByVal ControllerIP As String, ByVal controllerSN As Long, ByVal watchServerIP As String, ByVal watchServerPort As Long)
-    Dim sendBuff(63) As Byte    '数据发送缓冲区(64字节)
-    Dim recvbuff(63) As Byte     '数据接收缓冲区(64字节)
+    Dim sendBuff(63) As Byte    'Data sent buffer(64Bytes)
+    Dim recvbuff(63) As Byte     'Data reception buffer(64Bytes)
 
     Me.Winsock1.RemoteHost = ControllerIP
     Me.Winsock1.RemotePort = ControllerPort '60000
@@ -737,16 +737,16 @@ Private Sub testWatchingServer(ByVal ControllerIP As String, ByVal controllerSN 
     Dim ret As Integer
     Dim success As Integer
 
-    '1.18  设置接收服务器的IP和端口 (功能号: 0x90) **********************************************************************************
-    '  接收服务器的IP: 192.168.168.101  (当前电脑IP)
-    '(如果不想让控制器发出数据, 只要将接收服务器的IP设为0.0.0.0 就行了)
-    '接收服务器的端口: 61005
-    '每隔5秒发送一次: 05
+    '1.18  Set up the receiver serverIPand Port (Function Number: 0x90) **********************************************************************************
+    '  From the receiver.IP: 192.168.168.101  (Current computerIP)
+    '(If you don't want the controller to send the data,, As long as you're receiving the server.IPSet as0.0.0.0 There you go.)
+    'Port of receiving server: 61005
+    'Every5Seconds sent once.: 05
     ret = arrayReset(sendBuff, WGPacketSize)
     sendBuff(0) = WGPacketType
     sendBuff(1) = &H90
     ret = IntToByte(controllerSN, sendBuff, 4, 4)
-    '服务器IP: 192.168.168.101
+    'ServersIP: 192.168.168.101
     'sendBuff(8 + 0) = 192
     'sendBuff(8 + 1) = 168
     'sendBuff(8 + 2) = 168
@@ -755,18 +755,18 @@ Private Sub testWatchingServer(ByVal ControllerIP As String, ByVal controllerSN 
     Ar = Split(watchServerIP, ".", , vbTextCompare)
     If UBound(Ar) <> 4 - 1 Then
 
-        log ("watchServerIP 地址不合理")
+        log ("watchServerIP The address doesn't make sense.")
         Exit Sub
     End If
     sendBuff(8 + 0) = CInt(Ar(0))
     sendBuff(8 + 1) = CInt(Ar(1))
     sendBuff(8 + 2) = CInt(Ar(2))
     sendBuff(8 + 3) = CInt(Ar(3))
-    '接收服务器的端口: 61005
+    'Port of receiving server: 61005
     sendBuff(8 + 4) = (watchServerPort And &HFF)
     sendBuff(8 + 5) = ((watchServerPort - (watchServerPort And &HFF)) / 256) And &HFF
 
-    '每隔5秒发送一次: 05 (定时上传信息的周期为5秒 (正常运行时每隔5秒发送一次  有刷卡时立即发送))
+    'Every5Seconds sent once.: 05 (Periodically upload information as5sec (Every time running properly5Seconds sent once.  Send it when you have a brush card))
     sendBuff(8 + 6) = 5
 
     ret = pktrun(sendBuff, recvbuff)
@@ -776,16 +776,16 @@ Private Sub testWatchingServer(ByVal ControllerIP As String, ByVal controllerSN 
         If (recvbuff(8) = 1) Then
 
             success = 1
-            log ("1.18 设置接收服务器的IP和端口   成功...")
+            log ("1.18 Set up the receiver serverIPand Port   Success...")
         Else
-            log ("1.18 设置接收服务器的IP和端口   失败????...")
+            log ("1.18 Set up the receiver serverIPand Port   Failed????...")
             
         End If
     Else
-        log ("1.18 设置接收服务器的IP和端口   失败????...")
+        log ("1.18 Set up the receiver serverIPand Port   Failed????...")
     End If
-    Sleep (1000) '延时一秒 再读取
-    '1.19  读取接收服务器的IP和端口 (功能号: 0x92) **********************************************************************************
+    Sleep (1000) 'One second delay. Read again
+    '1.19  Read the receiver server.IPand Port (Function Number: 0x92) **********************************************************************************
     ret = arrayReset(sendBuff, WGPacketSize)
     sendBuff(0) = WGPacketType
     sendBuff(1) = &H92
@@ -795,46 +795,46 @@ Private Sub testWatchingServer(ByVal ControllerIP As String, ByVal controllerSN 
     If (ret = 1) Then
         getReceiveBuffData recvbuff
         success = 1
-        log ("1.19 读取接收服务器的IP和端口   成功...")
+        log ("1.19 Read the receiver server.IPand Port   Success...")
     Else
-        log ("1.19 读取接收服务器的IP和端口   失败????...")
+        log ("1.19 Read the receiver server.IPand Port   Failed????...")
     End If
 
 End Sub
 
 
-'进入接收服务器监控状态
+'Enter receiving server surveillance status
 Private Sub WatchingServerRuning(ByVal watchServerIP As String, ByVal watchServerPort As Long)
 
     watchingrecordIndex = -1
      
-    Me.WinsockServer.Bind watchServerPort  '使用当前电脑的watchServerPort
-        log ("进入接收服务器监控状态....")
+    Me.WinsockServer.Bind watchServerPort  'Use current computerwatchServerPort
+        log ("Enter receiving server surveillance status....")
 End Sub
 
 
 
 Private Sub Command2_Click()
 
- '记录原因 (类型中 SwipePass 表示通过; SwipeNOPass表示禁止通过; ValidEvent 有效事件(如按钮 门磁 超级密码开门); Warn 报警事件)
-    '代码  类型   英文描述  中文描述
-     RecordDetails = Array("1", "SwipePass", "Swipe", "刷卡开门", "2", "SwipePass", "Swipe Close", "刷卡关", "3", "SwipePass", "Swipe Open", "刷卡开", "4", "SwipePass", "Swipe Limited Times", "刷卡开门(带限次)", _
-"5", "SwipeNOPass", "Denied Access: PC Control", "刷卡禁止通过: 电脑控制", "6", "SwipeNOPass", "Denied Access: No PRIVILEGE", "刷卡禁止通过: 没有权限", "7", "SwipeNOPass", "Denied Access: Wrong PASSWORD", "刷卡禁止通过: 密码不对", "8", "SwipeNOPass", "Denied Access: AntiBack", "刷卡禁止通过: 反潜回", _
-"9", "SwipeNOPass", "Denied Access: More Cards", "刷卡禁止通过: 多卡", "10", "SwipeNOPass", "Denied Access: First Card Open", "刷卡禁止通过: 首卡", "11", "SwipeNOPass", "Denied Access: Door Set NC", "刷卡禁止通过: 门为常闭", "12", "SwipeNOPass", "Denied Access: InterLock", "刷卡禁止通过: 互锁", _
-"13", "SwipeNOPass", "Denied Access: Limited Times", "刷卡禁止通过: 受刷卡次数限制", "14", "SwipeNOPass", "Denied Access: Limited Person Indoor", "刷卡禁止通过: 门内人数限制", "15", "SwipeNOPass", "Denied Access: Invalid Timezone", "刷卡禁止通过: 卡过期或不在有效时段", "16", "SwipeNOPass", "Denied Access: In Order", "刷卡禁止通过: 按顺序进出限制", _
-"17", "SwipeNOPass", "Denied Access: SWIPE GAP LIMIT", "刷卡禁止通过: 刷卡间隔约束", "18", "SwipeNOPass", "Denied Access", "刷卡禁止通过: 原因不明", "19", "SwipeNOPass", "Denied Access: Limited Times", "刷卡禁止通过: 刷卡次数限制", "20", "ValidEvent", "Push Button", "按钮开门", _
-"21", "ValidEvent", "Push Button Open", "按钮开", "22", "ValidEvent", "Push Button Close", "按钮关", "23", "ValidEvent", "Door Open", "门打开[门磁信号]", "24", "ValidEvent", "Door Closed", "门关闭[门磁信号]", _
-"25", "ValidEvent", "Super Password Open Door", "超级密码开门", "26", "ValidEvent", "Super Password Open", "超级密码开", "27", "ValidEvent", "Super Password Close", "超级密码关", "28", "Warn", "Controller Power On", "控制器上电", _
-"29", "Warn", "Controller Reset", "控制器复位", "30", "Warn", "Push Button Invalid: Disable", "按钮不开门: 按钮禁用", "31", "Warn", "Push Button Invalid: Forced Lock", "按钮不开门: 强制关门", "32", "Warn", "Push Button Invalid: Not On Line", "按钮不开门: 门不在线", _
-"33", "Warn", "Push Button Invalid: InterLock", "按钮不开门: 互锁", "34", "Warn", "Threat", "胁迫报警", "35", "Warn", "Threat Open", "胁迫报警开", "36", "Warn", "Threat Close", "胁迫报警关", _
-"37", "Warn", "Open too long", "门长时间未关报警[合法开门后]", "38", "Warn", "Forced Open", "强行闯入报警", "39", "Warn", "Fire", "火警", "40", "Warn", "Forced Close", "强制关门", _
-"41", "Warn", "Guard Against Theft", "防盗报警", "42", "Warn", "7*24Hour Zone", "烟雾煤气温度报警", "43", "Warn", "Emergency Call", "紧急呼救报警", "44", "RemoteOpen", "Remote Open Door", "操作员远程开门", _
-"45", "RemoteOpen", "Remote Open Door By USB Reader", "发卡器确定发出的远程开门")
+ 'Record cause (Type SwipePass Adopted; SwipeNOPassMeans no pass.; ValidEvent Effective Event(Like buttons Door Magnetic Supercode open.); Warn Call the police.)
+    'Code  Type   English Description  Chinese Description
+     RecordDetails = Array("1", "SwipePass", "Swipe", "Open the swipe.", "2", "SwipePass", "Swipe Close", "Brush off", "3", "SwipePass", "Swipe Open", "Open it.", "4", "SwipePass", "Swipe Limited Times", "Open the swipe.(Time limit)", _
+"5", "SwipeNOPass", "Denied Access: PC Control", "It's forbidden to pass.: Computer control", "6", "SwipeNOPass", "Denied Access: No PRIVILEGE", "It's forbidden to pass.: No Permissions", "7", "SwipeNOPass", "Denied Access: Wrong PASSWORD", "It's forbidden to pass.: Wrong password.", "8", "SwipeNOPass", "Denied Access: AntiBack", "It's forbidden to pass.: Backwards", _
+"9", "SwipeNOPass", "Denied Access: More Cards", "It's forbidden to pass.: Doc!", "10", "SwipeNOPass", "Denied Access: First Card Open", "It's forbidden to pass.: First Card", "11", "SwipeNOPass", "Denied Access: Door Set NC", "It's forbidden to pass.: It's always closed.", "12", "SwipeNOPass", "Denied Access: InterLock", "It's forbidden to pass.: Interlock", _
+"13", "SwipeNOPass", "Denied Access: Limited Times", "It's forbidden to pass.: Limited number of brush cards", "14", "SwipeNOPass", "Denied Access: Limited Person Indoor", "It's forbidden to pass.: Number of people in the door", "15", "SwipeNOPass", "Denied Access: Invalid Timezone", "It's forbidden to pass.: Card expired or not valid", "16", "SwipeNOPass", "Denied Access: In Order", "It's forbidden to pass.: Ordered access restrictions", _
+"17", "SwipeNOPass", "Denied Access: SWIPE GAP LIMIT", "It's forbidden to pass.: Brush Card Interval", "18", "SwipeNOPass", "Denied Access", "It's forbidden to pass.: Reason unknown.", "19", "SwipeNOPass", "Denied Access: Limited Times", "It's forbidden to pass.: Limit number of brushes", "20", "ValidEvent", "Push Button", "Button open.", _
+"21", "ValidEvent", "Push Button Open", "Button On", "22", "ValidEvent", "Push Button Close", "Button Off", "23", "ValidEvent", "Door Open", "Open the door.[Door Magnetic Signal]", "24", "ValidEvent", "Door Closed", "Door closed.[Door Magnetic Signal]", _
+"25", "ValidEvent", "Super Password Open Door", "Supercode open.", "26", "ValidEvent", "Super Password Open", "Supercode open.", "27", "ValidEvent", "Super Password Close", "Super Password Level", "28", "Warn", "Controller Power On", "Power on the controller.", _
+"29", "Warn", "Controller Reset", "Control Reposition", "30", "Warn", "Push Button Invalid: Disable", "Buttons don't open.: button disabled", "31", "Warn", "Push Button Invalid: Forced Lock", "Buttons don't open.: Force the closing.", "32", "Warn", "Push Button Invalid: Not On Line", "Buttons don't open.: The door's offline.", _
+"33", "Warn", "Push Button Invalid: InterLock", "Buttons don't open.: Interlock", "34", "Warn", "Threat", "Coercion to the police.", "35", "Warn", "Threat Open", "Coercion to call the police.", "36", "Warn", "Threat Close", "Coercion to alarm.", _
+"37", "Warn", "Open too long", "The door was open for a long time.[After legally opening the door,]", "38", "Warn", "Forced Open", "Forced breaking into the police.", "39", "Warn", "Fire", "Fire!", "40", "Warn", "Forced Close", "Force the closing.", _
+"41", "Warn", "Guard Against Theft", "It's an alarm.", "42", "Warn", "7*24Hour Zone", "Smoke gas temperature alert.", "43", "Warn", "Emergency Call", "Call 911.", "44", "RemoteOpen", "Remote Open Door", "Operator opens the door remotely.", _
+"45", "RemoteOpen", "Remote Open Door By USB Reader", "The transmitter has confirmed the remote opening.")
 
-'2 1024-Bytes Command (1024字节指令实现 提取记录 上传权限 读取权限)
-     Dim sendBuff(63) As Byte    '数据发送缓冲区(64字节)
-    Dim recvbuff(63) As Byte     '数据接收缓冲区(64字节)
-    Dim recvbuff1024(1024) As Byte     '数据接收缓冲区(1024字节)
+'2 1024-Bytes Command (1024Byte Command Achieved Ripping records Upload Permissions Read Permissions)
+     Dim sendBuff(63) As Byte    'Data sent buffer(64Bytes)
+    Dim recvbuff(63) As Byte     'Data reception buffer(64Bytes)
+    Dim recvbuff1024(1024) As Byte     'Data reception buffer(1024Bytes)
        Dim ControllerIP As String
         Dim controllerSN As Long
                Me.txtSN.Text = 239999901
@@ -842,46 +842,46 @@ Private Sub Command2_Click()
 
          controllerSN = Me.txtSN.Text ' 229999901
          ControllerIP = Me.txtIP.Text '"192.168.168.123"
-    '  采用 UDP 通信
+    '  Adopt UDP Communications
     If (Me.Winsock1.Protocol <> sckUDPProtocol) Then
       Me.Winsock1.Protocol = sckUDPProtocol
     End If
     Me.Winsock1.RemoteHost = ControllerIP
     Me.Winsock1.RemotePort = ControllerPort '60000
 
-        '1024字节指令 测试
+        '1024Byte Command Test
         Dim ret As Integer
         ret = 0
         Dim success As Integer
         success = 0
-        '0 失败, 1表示成功
+        '0 Failed, 1It means success.
         Dim command1024(1024 - 1)  As Byte
 
     
-        '1.9    提取记录操作
-        '1. 通过 0xB0指令 获取最早一条记录索引
-        '2. 通过 0xB0指令 获取最后一条记录索引
-        '3. 通过 0xB4指令 获取已读取过的记录索引号 recordIndex
-        '4. 通过 0xB0指令 获取指定索引号的记录  从recordIndex + 1开始提取记录， 直到记录为空为止
-        '5. 通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
-        '经过上面三个步骤， 整个提取记录的操作完成
+        '1.9    Extract Record Operation
+        '1. Pass. 0xB0Command Fetch the earliest record index
+        '2. Pass. 0xB0Command Get Last Record Index
+        '3. Pass. 0xB4Command Get read record index numbers recordIndex
+        '4. Pass. 0xB0Command Get a record of the given index number  FromrecordIndex + 1Start extracting records， Until the records are empty.
+        '5. Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
+        'After three steps,， The entire extraction record is complete.
         Dim firstRecordIndex As Long
         firstRecordIndex = 0
-        '第一条记录索引号
+        'First record index number
         Dim lastRecordIndex As Long
         lastRecordIndex = 0
-        '最后一条记录索引号
+        'Last record index number.
         Dim recordIndexGotToRead As Long
         recordIndexGotToRead = 0
         Dim recordIndexToGet As Long
         recordIndexToGet = 0
-        log ("1.9 提取记录操作" & Chr(9) & " 开始...")
+        log ("1.9 Extract Record Operation" & Chr(9) & " Start...")
 
         ret = arrayReset(sendBuff, WGPacketSize)
         sendBuff(0) = WGPacketType
         sendBuff(1) = &HB0
         ret = IntToByte(controllerSN, sendBuff, 4, 4)
-        '如果=0, 则取回最早一条记录信息
+        'If=0, Retrieving the earliest recorded information
         recordIndexToGet = 0
         ret = IntToByte(recordIndexToGet, sendBuff, 8, 4)
         ret = pktrun(sendBuff, recvbuff)
@@ -890,14 +890,14 @@ Private Sub Command2_Click()
             getReceiveBuffData recvbuff
             success = 1
             firstRecordIndex = ByteToLong(recvbuff, 8, 4)
-             log (" 获取最早一条记录索引 =" & firstRecordIndex)
+             log (" Fetch the earliest record index =" & firstRecordIndex)
         End If
 
         ret = arrayReset(sendBuff, WGPacketSize)
         sendBuff(0) = WGPacketType
         sendBuff(1) = &HB0
         ret = IntToByte(controllerSN, sendBuff, 4, 4)
-        ' 取最后的一条记录索引
+        ' Take Last Record Index
         recordIndexToGet = &HFFFFFFFF
         ret = IntToByte(recordIndexToGet, sendBuff, 8, 4)
         ret = pktrun(sendBuff, recvbuff)
@@ -906,10 +906,10 @@ Private Sub Command2_Click()
             getReceiveBuffData recvbuff
             success = 1
             lastRecordIndex = ByteToLong(recvbuff, 8, 4)
-             log (" 取最后的一条记录索引 =" & lastRecordIndex)
+             log (" Take Last Record Index =" & lastRecordIndex)
         End If
 
-        '获取已读取过的记录索引号
+        'Get read record index numbers
         ret = arrayReset(sendBuff, WGPacketSize)
         sendBuff(0) = WGPacketType
         sendBuff(1) = &HB4
@@ -920,22 +920,22 @@ Private Sub Command2_Click()
             getReceiveBuffData recvbuff
             success = 1
             recordIndexGotToRead = ByteToLong(recvbuff, 8, 4)
-            log ("获取已读取过的记录索引号  =" & recordIndexGotToRead)
+            log ("Get read record index numbers  =" & recordIndexGotToRead)
         End If
 
 
         Dim validRecordsCount As Long
          Dim cnt As Long
        validRecordsCount = 0
-        'recordIndexGotToRead = 0;  //2015-11-05 21:31:05 强制取所有记录
+        'recordIndexGotToRead = 0;  //2015-11-05 21:31:05 Force all records
         If ret > 0 Then
             Dim recordIndexValidGet As Long
             recordIndexValidGet = 0
             Dim recordIndexToGetStart As Long
             recordIndexToGetStart = recordIndexGotToRead + 1
-            '准备要提取的记录索引位
+            'Prepare record index to extract
             If (recordIndexGotToRead > lastRecordIndex) Or (recordIndexGotToRead < firstRecordIndex) Then
-                '超过范围 取第一个记录的索引号
+                'Beyond range Take index number for the first record
                 recordIndexToGetStart = firstRecordIndex
             End If
             Dim recordIndexCurrent As Long
@@ -949,7 +949,7 @@ Private Sub Command2_Click()
                 Dim j As Long
                 j = 0
                 For j = 0 To 1024 - 1
-                    '复位
+                    'Restore
                     command1024(j) = 0
                 Next
                 recordIndexCurrent = recordIndexToGetStart
@@ -957,7 +957,7 @@ Private Sub Command2_Click()
                 Do While j < 1024
                      ret = IntToByte(recordIndexToGetStart, sendBuff, 8, 4)
                     sendSequenceId = sendSequenceId + 1
-                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) '序号
+                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) 'Serial number
                     Dim k As Long
                     For k = 0 To 63
                       command1024(j + k) = sendBuff(k)
@@ -977,12 +977,12 @@ Private Sub Command2_Click()
                    Do While j < 1024
 
                         success = 0
-                        '12 记录类型
-                        '0=无记录
-                        '1=刷卡记录
-                        '2=门磁,按钮, 设备启动, 远程开门记录
-                        '3=报警记录 1
-                        '0xFF=表示指定索引位的记录已被覆盖掉了.  请使用索引0, 取回最早一条记录的索引值
+                        '12 Record type
+                        '0=No record
+                        '1=Brush Card Record
+                        '2=Door Magnetic,button, Device startup, Remote Open Record
+                        '3=Call the police. 1
+                        '0xFF=The record indicating the given index position has been overwritten.  Use the index.0, Retrieving index values from the earliest record
 
                         For k = 0 To 64 - 1
                         recvbuff(k) = recvbuff1024(j + k)
@@ -991,11 +991,11 @@ Private Sub Command2_Click()
                        recordType = recvbuff(12)
                         If recordType = 0 Then
                             success = 2
-                            '没有更多记录
+                            'No more records.
                             Exit Do
                         End If
                         If recordType = 255 Then
-                            '此索引号无效
+                            'This index number is invalid
                             success = 0
                             Exit Do
                         End If
@@ -1005,14 +1005,14 @@ Private Sub Command2_Click()
                         validRecordsCount = validRecordsCount + 1
                         '
                         If validRecordsCount < 100 Then
-                            '2015-11-05 14:59:20显示前100个, 太多显示处理速度慢 不作分析了...
+                            '2015-11-05 14:59:20Show Before100individual, Too much shows slow processing. No analysis....
                             displayRecordInformation recvbuff
                             '2015-06-09 20:01:21
                             If validRecordsCount = 99 Then
-                                log (" 为加快提取速度, 超过100个的  不再显示记录信息...")
+                                log (" To speed up extraction, Over100Shit.  Do not display recording information again...")
 
                             End If
-                            '.......对收到的记录作存储处理
+                            '.......Storage of records received
                             '*****
                             '###############
                         End If
@@ -1022,23 +1022,23 @@ Private Sub Command2_Click()
                     Exit Do
                 End If
             Else
-                    '提取失败
+                    'Ripping failed
                     Exit Do
             End If
           Loop
 
-           log ("1.9 完全提取成功 成功... 有效记录数= " & validRecordsCount)
+           log ("1.9 Full extraction successful. Success... Number of valid records= " & validRecordsCount)
             If (success > 0) And validRecordsCount > 0 Then
-                '通过 0xB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+                'Pass. 0xB2Command Set a read record index number  Sets the value as the last read brush record index number
 
                 ret = arrayReset(sendBuff, WGPacketSize)
                 sendBuff(0) = WGPacketType
                 sendBuff(1) = &HB2
                 ret = IntToByte(controllerSN, sendBuff, 4, 4)
-                '通过 &HB2指令 设置已读取过的记录索引号  设置的值为最后读取到的刷卡记录索引号
+                'Pass. &HB2Command Set a read record index number  Sets the value as the last read brush record index number
                 recordIndexGot = recordIndexValidGet
                 ret = IntToByte(recordIndexGot, sendBuff, 8, 4)
-                '12    标识(防止误设置)    1   &H55 (固定)
+                '12    Identification(Prevent Error Settings)    1   &H55 (Fixed)
                 i = SpecialFlag
                 ret = IntToByte(i, sendBuff, 8 + 4, 4)
                 ret = pktrun(sendBuff, recvbuff)
@@ -1046,26 +1046,26 @@ Private Sub Command2_Click()
                 If (ret = 1) Then
                     getReceiveBuffData recvbuff
                     If (recvbuff(8) = 1) Then
-                        '完全提取成功....
+                        'Full extraction successful.....
                         success = 1
-                        log ("1.9 完全提取成功   成功...")
+                        log ("1.9 Full extraction successful.   Success...")
                     End If
                 End If
           End If
        End If
        
-       '1.21   权限按从小到大顺序添加[功能号: 0x56] 适用于权限数过1000, 少于8万 **********************************************************************************
-        '此功能实现 完全更新全部权限, 用户不用清空之前的权限. 只是将上传的权限顺序从第1个依次到最后一个上传完成. 如果中途中断的话, 仍以原权限为主
-        '建议权限数更新超过50个, 即可使用此指令
-        '以10000个卡号为例, 此处简化的排序, 直接是以50001开始的10000个卡. 用户按照需要将要上传的卡号排序存放
+       '1.21   Permissions added from childhood to larger[Function Number: 0x56] Applies to privileges1000, Less810,000 **********************************************************************************
+        'This feature achieves Fully update all permissions, User does not have to empty permissions before. Just order the upload permissions from the first1In turn to last upload complete. If you interrupt., Still with the original authority.
+        'Suggested number of privileges updated over50individual, Use this command
+        'Here.10000A card number is an example., Simplicit Sorting Here, Directly by50001Started.10000A card.. Store according to the number of card to be uploaded as required
         
-        log ("1.21 权限按从小到大顺序添加[功能号: 0x56]开始...[1024字节指令]")
-        log ("       1万条权限...")
+        log ("1.21 Permissions added from childhood to larger[Function Number: 0x56]Start...[1024Byte Command]")
+        log ("       1Thousand powers...")
 
         Dim cardCount As Long
         Dim cardNOOfPrivilege As Long
         cardCount = 10000
-        '2015-06-09 20:20:20 卡总数量
+        '2015-06-09 20:20:20 Total number of cards
         Dim cardArray(200000 - 1) As Long
         For i = 0 To cardCount - 1
             cardArray(i) = 50001 + i
@@ -1075,7 +1075,7 @@ Private Sub Command2_Click()
                '         Dim j As Long
                 j = 0
                 For j = 0 To 1024 - 1
-                    '复位
+                    'Restore
                     command1024(j) = 0
                 Next
                 j = 0
@@ -1090,30 +1090,30 @@ Private Sub Command2_Click()
                     
                      cardNOOfPrivilege = cardArray(cnt)
                      ret = DoubleToByte(cardNOOfPrivilege, sendBuff, 8, 4)
-                       '20 10 01 01 起始日期:  2010年01月01日   (必须大于2001年)
+                       '20 10 01 01 Start date:  2010Year01Month01Day   (Must be greater than2001Year)
             sendBuff(8 + 4) = &H20
             sendBuff(8 + 5) = &H10
             sendBuff(8 + 6) = &H1
             sendBuff(8 + 7) = &H1
-            '20 29 12 31 截止日期:  2029年12月31日
+            '20 29 12 31 Deadline:  2029Year12Month31Day
             sendBuff(8 + 8) = &H20
             sendBuff(8 + 9) = &H29
             sendBuff(8 + 10) = &H12
             sendBuff(8 + 11) = &H31
-            '01 允许通过 一号门 (对单门, 双门, 四门控制器有效)
+            '01 Allow Pass Door one. (Single door., Double door., Four controllers working.)
             sendBuff(8 + 12) = &H1
-            '01 允许通过 二号门 (对双门, 四门控制器有效)
-            sendBuff(8 + 13) = &H1  '如果禁止2号门, 则只要设为 &H00
-            '01 允许通过 三号门 (对四门控制器有效)
+            '01 Allow Pass Door two. (Two doors., Four controllers working.)
+            sendBuff(8 + 13) = &H1  'If it's forbidden,2Door., As &H00
+            '01 Allow Pass Gate three. (It works on four controllers.)
             sendBuff(8 + 14) = &H1
-            '01 允许通过 四号门 (对四门控制器有效)
+            '01 Allow Pass Gate four. (It works on four controllers.)
             sendBuff(8 + 15) = &H1
         
-            ret = IntToByte(cardCount, sendBuff, 32, 4)            '总的权限数
-            ret = IntToByte(cnt + 1, sendBuff, 35, 4)      '当前权限的索引位(从1开始)
+            ret = IntToByte(cardCount, sendBuff, 32, 4)            'Total permissions
+            ret = IntToByte(cnt + 1, sendBuff, 35, 4)      'The index place for the current permission(From1Start)
         
                     sendSequenceId = sendSequenceId + 1
-                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) '序号
+                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) 'Serial number
                     'Dim k As Long
                     For k = 0 To 63
                       command1024(j + k) = sendBuff(k)
@@ -1136,25 +1136,25 @@ Private Sub Command2_Click()
                     success = 1
                 Else
                      If recvbuff(8) = &HE1 Then
-                        log ("1.21权限按从小到大顺序添加[功能号: 0x56] =0xE1 表示卡号没有从小到大排序...[1024字节指令]???")
+                        log ("1.21Permissions added from childhood to larger[Function Number: 0x56] =0xE1 Which means the card number has not been sorted from a small to a large size....[1024Byte Command]???")
                        success = 0
                        Exit Do
                    
                     End If
                   End If
             Else
-               log ("1.21权限按从小到大顺序添加[功能号: 0x56] 通信不上...[1024字节指令]???")
+               log ("1.21Permissions added from childhood to larger[Function Number: 0x56] No communication....[1024Byte Command]???")
                 Exit Do
             End If
         Loop
         If success = 1 Then
-            log ("1.21权限按从小到大顺序添加[功能号: 0x56] 成功...[1024字节指令]")
+            log ("1.21Permissions added from childhood to larger[Function Number: 0x56] Success...[1024Byte Command]")
         Else
-            log ("1.21权限按从小到大顺序添加[功能号: 0x56] 失败...[1024字节指令]????")
+            log ("1.21Permissions added from childhood to larger[Function Number: 0x56] Failed...[1024Byte Command]????")
         End If
         
         
-   '1.16  获取指定索引号的权限[功能号: 0x5C] **********************************************************************************
+   '1.16  Access to specified index numbers[Function Number: 0x5C] **********************************************************************************
         Dim maxCount   As Long
         Dim iCount As Long
         Dim cardNOOfPrivilegeGet As Double
@@ -1162,20 +1162,20 @@ Private Sub Command2_Click()
         cardNOOfPrivilegeToGetlast = 0
         iCount = 0
         maxCount = 200000
-        '2015-06-09 20:20:20 卡总数量
+        '2015-06-09 20:20:20 Total number of cards
         Dim cardArrayGet(200000 - 1) As Long
         For i = 0 To maxCount - 1
             cardArrayGet(i) = 0
         Next
         cnt = 0
-        log ("读取所有权限" & Chr(9) & " 开始...[1024字节指令]")
+        log ("Read All Permissions" & Chr(9) & " Start...[1024Byte Command]")
         Dim QueryIndex As Long
-        QueryIndex = 1 '索引号(从1开始);
+        QueryIndex = 1 'Index number(From1Start);
         Do While cnt < maxCount
                '         Dim j As Long
                 j = 0
                 For j = 0 To 1024 - 1
-                    '复位
+                    'Restore
                     command1024(j) = 0
                 Next
                 recordIndexCurrent = recordIndexToGetStart
@@ -1186,11 +1186,11 @@ Private Sub Command2_Click()
                      sendBuff(1) = &H5C
                      ret = IntToByte(controllerSN, sendBuff, 4, 4)
                     
-                      ret = IntToByte(QueryIndex, sendBuff, 8, 4) '索引号(从1开始);
+                      ret = IntToByte(QueryIndex, sendBuff, 8, 4) 'Index number(From1Start);
                       QueryIndex = QueryIndex + 1
                       
                     sendSequenceId = sendSequenceId + 1
-                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) '序号
+                    ret = IntToByte(sendSequenceId, sendBuff, 40, 4) 'Serial number
                     'Dim k As Long
                     For k = 0 To 63
                       command1024(j + k) = sendBuff(k)
@@ -1214,14 +1214,14 @@ Private Sub Command2_Click()
                  
                     cardNOOfPrivilegeGet = ByteToDouble(recvbuff, 8, 4) ' ByteToLong(recvBuff, 8, 4)
                     If (&HFFFFFFFF = cardNOOfPrivilegeGet) Then
-                              'FFFFFFFF对应于4294967295
-                        'log ("1.16      没有权限信息: (权限已删除)")
+                              'FFFFFFFFResponse4294967295
+                        'log ("1.16      Can not open message: (Permissions deleted)")
                         success = 1
                     ElseIf (0 = cardNOOfPrivilegeGet) Then
-                       ' log ("1.16       没有权限信息: (卡号部分为0)--此索引号之后没有权限了")
+                       ' log ("1.16       Can not open message: (The card number is0)--This index number is no longer valid.")
                        Exit Do
                     Else
-                        'log ("1.16      有权限信息...")
+                        'log ("1.16      Can not open message...")
                         cardArrayGet(iCount) = cardNOOfPrivilegeToGet
                          iCount = iCount + 1
                          success = 1
@@ -1235,15 +1235,15 @@ Private Sub Command2_Click()
                  End If
                  
             Else
-            log ("1.16     有问题..." & ret)
+            log ("1.16     Problem...." & ret)
             Exit Do
             End If
                  
          
         Loop
 
-       log ("最后读取到的权限的卡号 = " & cardNOOfPrivilegeToGetlast)
-       log ("提取到的权限数iCount = " & iCount)
+       log ("Last read permission card number = " & cardNOOfPrivilegeToGetlast)
+       log ("Permissions extractediCount = " & iCount)
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -1251,26 +1251,26 @@ Private Sub Form_Unload(Cancel As Integer)
     Me.WinsockServer.Close
 End Sub
 
-'服务器接收数据处理
+'Servers receiving data processing
 Private Sub WinsockServer_DataArrival(ByVal bytesTotal As Long)
     Dim sn As Long
     If (bytesTotal > 0 And ((bytesTota Mod WGPacketSize) = 0)) Then
-        '是有效数据
+        'It's a valid data.
     Else
         Dim varlose As Object
-        Me.WinsockServer.GetData (varlose) '清空掉
+        Me.WinsockServer.GetData (varlose) 'Empty it.
         Exit Sub
     End If
 
     Dim receivedByteCnt As Integer
     Dim watchingRecvBuffVar As Variant
-    Dim watchingRecvBuff(63) As Byte    '服务器监控 接收数据
+    Dim watchingRecvBuff(63) As Byte    'Server Monitor Receiving data
 
     receivedByteCnt = 0
     Do While (receivedByteCnt < bytesTotal)
         Me.WinsockServer.GetData watchingRecvBuffVar, vbArray + vbByte, WGPacketSize
 
-        '检查类型, 功能号, 要一致
+        'Type of inspection, Function Number, It's consistent.
         Dim i As Integer
         For i = 0 To WGPacketSize - 1
             watchingRecvBuff(i) = watchingRecvBuffVar(i)
@@ -1278,7 +1278,7 @@ Private Sub WinsockServer_DataArrival(ByVal bytesTotal As Long)
         If (watchingRecvBuff(1) = &H20) Then
             sn = ByteToLong(watchingRecvBuff, 4, 4)
 
-            log ("接收到来自控制器SN = " & sn & " 的数据包..")
+            log ("Received from controllerSN = " & sn & " Packages..")
 
             Dim recordIndex As Long
             recordIndex = ByteToLong(watchingRecvBuff, 8, 4)
@@ -1287,8 +1287,8 @@ Private Sub WinsockServer_DataArrival(ByVal bytesTotal As Long)
                displayRecordInformation watchingRecvBuff
             End If
             
-            Text1.SelLength = 1              '显示最后一行
-            Text1.SelStart = Len(Text1.Text) '显示最后一行
+            Text1.SelLength = 1              'Show Last Line
+            Text1.SelStart = Len(Text1.Text) 'Show Last Line
         End If
 
         receivedByteCnt = receivedByteCnt + WGPacketSize

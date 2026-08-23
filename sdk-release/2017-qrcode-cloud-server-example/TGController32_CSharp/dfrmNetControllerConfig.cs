@@ -103,8 +103,8 @@ namespace WGController32_CSharp
 
                 if (frm.ShowDialog(this) == DialogResult.OK)
                 {
-                    MessageBox.Show("请重新搜索...");
-                    //this.btnSearch.PerformClick(); //2017-09-08 17:19:26 重新搜索
+                    MessageBox.Show("Research, please....");
+                    //this.btnSearch.PerformClick(); //2017-09-08 17:19:26 Research
                     //string strSN = frm.strSN;
                     //string strMac = frm.strMac;
                     //string strIP = frm.strIP;

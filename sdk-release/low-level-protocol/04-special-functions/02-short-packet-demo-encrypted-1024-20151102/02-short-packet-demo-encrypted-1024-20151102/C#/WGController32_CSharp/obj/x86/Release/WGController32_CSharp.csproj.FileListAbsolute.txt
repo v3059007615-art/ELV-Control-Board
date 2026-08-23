@@ -1,35 +1,35 @@
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\ResolveAssemblyReference.cache
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.read.1.tlog
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.write.1.tlog
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
-D:\微耕门禁二次开发共享目录\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\bin\Release\n3kAdrtC.dll
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\ResolveAssemblyReference.cache
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.read.1.tlog
-D:\微耕门禁二次开发共享目录\待发行\二次开发(基于底层协议)\02短报文协议DEMO\C#\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.write.1.tlog
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csprojResolveAssemblyReference.cache
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csproj.GenerateResource.Cache
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csprojResolveAssemblyReference.cache
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
-D:\微耕二次开发\02短报文协议DEMO[短报文通信密码加1024字节指令]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csproj.GenerateResource.Cache
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\ResolveAssemblyReference.cache
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.read.1.tlog
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.write.1.tlog
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
+D:\Micro-cropping Doors No Secondary Development Shared Directory\VB6.0\WGController32_VS.NET-20150505-V2.5\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\bin\Release\n3kAdrtC.dll
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\ResolveAssemblyReference.cache
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.read.1.tlog
+D:\Micro-cropping Doors No Secondary Development Shared Directory\To be issued\Secondary development(Based on Bottom Agreement)\02Shortcast agreementDEMO\C#\WGController32_CSharp\obj\x86\Release\GenerateResource-ResGen.write.1.tlog
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csprojResolveAssemblyReference.cache
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csproj.GenerateResource.Cache
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[Fax code]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.exe
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.pdb
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.exe
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\bin\Release\WGController32_CSharp.pdb
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csprojResolveAssemblyReference.cache
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Form1.resources
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.Properties.Resources.resources
+D:\Micro-cultivation secondary development\02Shortcast agreementDEMO[SMS code plus1024Byte Command]-20151102\C#\WGController32_CSharp\obj\x86\Release\WGController32_CSharp.csproj.GenerateResource.Cache

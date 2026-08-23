@@ -7,7 +7,7 @@ namespace WGController32_CSharp
     static class Program
     {
         /// <summary>
-        /// 应用程序的主入口点。
+        /// Application main entry point。
         /// </summary>
         [STAThread]
         static void Main()

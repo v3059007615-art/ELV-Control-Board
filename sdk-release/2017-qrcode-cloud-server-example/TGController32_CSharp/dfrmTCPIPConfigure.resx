@@ -454,7 +454,7 @@
     <value>4</value>
   </data>
   <data name="optDhcp.Text" xml:space="preserve">
-    <value>启用 动态获取IP(DHCP)</value>
+    <value>Enable Dynamic AccessIP(DHCP)</value>
   </data>
   <data name="&gt;&gt;optDhcp.Name" xml:space="preserve">
     <value>optDhcp</value>
@@ -481,7 +481,7 @@
     <value>5</value>
   </data>
   <data name="optSetIP.Text" xml:space="preserve">
-    <value>指定IP</value>
+    <value>AssignIP</value>
   </data>
   <data name="&gt;&gt;optSetIP.Name" xml:space="preserve">
     <value>optSetIP</value>
@@ -622,7 +622,7 @@
     <value>7</value>
   </data>
   <data name="groupBox2.Text" xml:space="preserve">
-    <value>接收服务器设置</value>
+    <value>Receiving Server Settings</value>
   </data>
   <data name="&gt;&gt;groupBox2.Name" xml:space="preserve">
     <value>groupBox2</value>
@@ -652,7 +652,7 @@
     <value>118</value>
   </data>
   <data name="label6.Text" xml:space="preserve">
-    <value>定时发送间隔Cycle</value>
+    <value>Time sent intervalCycle</value>
   </data>
   <data name="label6.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>TopRight</value>
@@ -685,7 +685,7 @@
     <value>117</value>
   </data>
   <data name="label7.Text" xml:space="preserve">
-    <value>秒</value>
+    <value>sec</value>
   </data>
   <data name="label7.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>TopRight</value>
@@ -739,7 +739,7 @@
     <value>115</value>
   </data>
   <data name="label8.Text" xml:space="preserve">
-    <value>接收服务器端口Port:</value>
+    <value>Receive Server PortPort:</value>
   </data>
   <data name="&gt;&gt;label8.Name" xml:space="preserve">
     <value>label8</value>
@@ -814,7 +814,7 @@
     <value>111</value>
   </data>
   <data name="label197.Text" xml:space="preserve">
-    <value>接收服务器IP:</value>
+    <value>Receiving ServersIP:</value>
   </data>
   <data name="&gt;&gt;label197.Name" xml:space="preserve">
     <value>label197</value>
@@ -844,7 +844,7 @@
     <value>111</value>
   </data>
   <data name="chkEditDateServer.Text" xml:space="preserve">
-    <value>修改接收服务器配置</value>
+    <value>Modify receiving server configuration</value>
   </data>
   <data name="&gt;&gt;chkEditDateServer.Name" xml:space="preserve">
     <value>chkEditDateServer</value>
@@ -874,7 +874,7 @@
     <value>119</value>
   </data>
   <data name="label9.Text" xml:space="preserve">
-    <value>0秒时, 只有刷卡或事件发生时才发送)</value>
+    <value>0seconds, Only when a card or event occurs)</value>
   </data>
   <data name="label9.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>TopRight</value>

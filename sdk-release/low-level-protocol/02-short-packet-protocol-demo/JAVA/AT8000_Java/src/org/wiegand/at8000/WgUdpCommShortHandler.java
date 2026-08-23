@@ -33,7 +33,7 @@ public class WgUdpCommShortHandler implements IoHandler {
 			byte[] validBytes = new byte[io.remaining()];
 			io.get(validBytes,0,io.remaining());
 			if ((validBytes.length == WgUdpCommShort.WGPacketSize)
-					&& (validBytes[0] == WgUdpCommShort.Type))  //型号固定
+					&& (validBytes[0] == WgUdpCommShort.Type))  //Model fixed
 			{
 				synchronized (queue)
 		         {
@@ -42,7 +42,7 @@ public class WgUdpCommShortHandler implements IoHandler {
 			}
 			else
 			{
-				//System.out.print("收到无效数据包: ????\r\n");
+				//System.out.print("Invalid package received: ????\r\n");
 			}
 			//System.out.println("");
 		}

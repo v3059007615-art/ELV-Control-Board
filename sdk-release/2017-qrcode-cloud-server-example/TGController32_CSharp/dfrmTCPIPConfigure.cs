@@ -26,7 +26,7 @@ namespace WGController32_CSharp
 
 
 
-        //            '输入的IP要求是首字节不能为00, 最后字节不能为255
+        //            'EnteredIPFirst byte is not required00, The last byte is not allowed255
         public Boolean isIPAddress(string ipstr)
         {
             Boolean ret = false;
@@ -45,7 +45,7 @@ namespace WGController32_CSharp
                         ret = true;
                         for (int i = 0; i <= 3; i++)
                         {
-                            //'数值0到255
+                            //'Value0Present.255
                             if (!int.TryParse(strIPInput[i], out itemp))
                             {
                                 ret = false;
@@ -59,12 +59,12 @@ namespace WGController32_CSharp
                                 break;
                             }
                         }
-                        if (int.Parse(strIPInput[0]) == 0) // '第一个值不能为0 
+                        if (int.Parse(strIPInput[0]) == 0) // 'The first value cannot be0 
                         {
                             ret = false;
 
                         }
-                        else if (int.Parse(strIPInput[3]) == 255) //最后一个值不能为255 
+                        else if (int.Parse(strIPInput[3]) == 255) //The last value cannot be255 
                         {
                             ret = false;
 
@@ -84,7 +84,7 @@ namespace WGController32_CSharp
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            //新的值
+            //New Value
             int itemp;
             if (this.txtf_ControllerSN.ReadOnly == false)
             {
@@ -97,21 +97,21 @@ namespace WGController32_CSharp
 
             }
 
-            this.txtf_IP.Text = this.txtf_IP.Text.Replace(" ", ""); // '排除空格
+            this.txtf_IP.Text = this.txtf_IP.Text.Replace(" ", ""); // 'Exclude Space
             if (!isIPAddress(this.txtf_IP.Text))
             {
                 MessageBox.Show("IP  Wrong");
                 return;
             }
 
-            this.txtf_mask.Text = this.txtf_mask.Text.Replace(" ", ""); // '排除空格
+            this.txtf_mask.Text = this.txtf_mask.Text.Replace(" ", ""); // 'Exclude Space
             if (!isIPAddress(this.txtf_mask.Text))
             {
                 MessageBox.Show("mask  Wrong");
                 return;
             }
 
-            this.txtf_gateway.Text = this.txtf_gateway.Text.Replace(" ", ""); // '排除空格
+            this.txtf_gateway.Text = this.txtf_gateway.Text.Replace(" ", ""); // 'Exclude Space
             if (!string.IsNullOrEmpty(this.txtf_gateway.Text))
             {
                 if (!isIPAddress(this.txtf_gateway.Text))
@@ -121,7 +121,7 @@ namespace WGController32_CSharp
                 }
             }
 
-            this.txtHostIP.Text = this.txtHostIP.Text.Replace(" ", ""); // '排除空格
+            this.txtHostIP.Text = this.txtHostIP.Text.Replace(" ", ""); // 'Exclude Space
             if (!string.IsNullOrEmpty(this.txtHostIP.Text))
             {
                 if (!isIPAddress(this.txtHostIP.Text))
@@ -137,13 +137,13 @@ namespace WGController32_CSharp
             strMask = this.txtf_mask.Text;
             strGateway = this.txtf_gateway.Text;
 
-            //修改IP
+            //ModifyIP
             int ret = 0;
-            //创建短报文 pkt
+            //Create short message pkt
 
             WGPacketShort pkt = new WGPacketShort();
             pkt.iDevSn = long.Parse(strSN); // controllerSN;
-            //设置接收服务器
+            //Set up the receiver server
             if (this.chkEditDateServer.Checked)
             {
                 pkt.Reset();
@@ -151,21 +151,21 @@ namespace WGController32_CSharp
                 if (!string.IsNullOrEmpty(this.txtHostIP.Text))
                 {
                     IPAddress adr = IPAddress.Parse(this.txtHostIP.Text);
-                    Array.Copy(adr.GetAddressBytes(), 0, pkt.data, 0, 4);  //新的接收服务器IP
+                    Array.Copy(adr.GetAddressBytes(), 0, pkt.data, 0, 4);  //New ReceiverIP
                 }
                 int port = int.Parse(this.txtPortShort.Text);
-                pkt.data[4] = (byte)(port & 0xff);         //新的port
+                pkt.data[4] = (byte)(port & 0xff);         //Newport
                 pkt.data[5] = (byte)((port >> 8) & 0xff);
 
-                pkt.data[6] = (byte)(this.nudCycle.Value); // 新的cycle
+                pkt.data[6] = (byte)(this.nudCycle.Value); // Newcycle
                 ret = pkt.run(strPCAddr);
                 if (ret == 1)
                 {
-                    //修改OK
+                    //ModifyOK
                 }
                 else
                 {
-                    MessageBox.Show("修改接收服务器失败...");
+                    MessageBox.Show("Failed to modify receiver...");
                     return;
                 }
             }
@@ -173,21 +173,21 @@ namespace WGController32_CSharp
 
 
 
-            //修改IP
+            //ModifyIP
             pkt.Reset();
             pkt.functionID = 0x96;
             IPAddress adrA = IPAddress.Parse(this.txtf_IP.Text);
-            Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 0, 4);  //新IP
+            Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 0, 4);  //NewIP
             adrA = IPAddress.Parse(this.txtf_mask.Text);
-            Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 4, 4);  //新掩码
+            Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 4, 4);  //New Mask
             if (!string.IsNullOrEmpty(strGateway))
             {
                 adrA = IPAddress.Parse(this.txtf_gateway.Text);
-                Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 8, 4);  //新网关
+                Array.Copy(adrA.GetAddressBytes(), 0, pkt.data, 8, 4);  //New Gateway
             }
             if (this.optDhcp.Checked)
             {
-                //选择动态获取IP DHCP 则IP设置为00
+                //Select Dynamic AcquireIP DHCP thenIPSet As00
                 pkt.data[0] = 0x0;
                 pkt.data[1] = 0x0;
                 pkt.data[2] = 0x0;
@@ -200,11 +200,11 @@ namespace WGController32_CSharp
             ret = pkt.run(strPCAddr);
             //if (ret == 1)
             //{
-            //    //修改OK
+            //    //ModifyOK
             //}
             //else
             //{
-            //    MessageBox.Show("修改IP失败...");
+            //    MessageBox.Show("ModifyIPFailed...");
             //    return;
             //}
 
@@ -214,12 +214,12 @@ namespace WGController32_CSharp
         }
 
         /// <summary>
-        /// 4字节转成整型数(低位前, 高位后)
+        /// 4Byte to Integer(Down front., Behind you.)
         /// </summary>
-        /// <param name="buff">字节数组</param>
-        /// <param name="start">起始索引位(从0开始计)</param>
-        /// <param name="len">长度</param>
-        /// <returns>整型数</returns>
+        /// <param name="buff">Bytes</param>
+        /// <param name="start">Start Indexing Post(From0Start counting.)</param>
+        /// <param name="len">Length</param>
+        /// <returns>Integer</returns>
         long byteToLong(byte[] buff, int start, int len)
         {
             long val = 0;
@@ -233,19 +233,19 @@ namespace WGController32_CSharp
 
         string dataServerShortIP = "";
         int dataServerShortPort = 61005; // int.Parse(this.txtPort.Text);
-        int dataServerShortCycle = 4;  //2015-06-14 08:23:17 引入通信周期发送
-        int[] dataServerShortOption = new int[8]; //2017-09-08 12:43:53 8个选项 特殊用
+        int dataServerShortCycle = 4;  //2015-06-14 08:23:17 Introduction of cycle delivery
+        int[] dataServerShortOption = new int[8]; //2017-09-08 12:43:53 8Options Special
 
         void getdeviceNetInfo()
         {
             int ret = 0;
-            //创建短报文 pkt
+            //Create short message pkt
 
             WGPacketShort pkt = new WGPacketShort();
             pkt.iDevSn = long.Parse(strSN); // controllerSN;
             //pkt.IP = strIP; // ControllerIP;
 
-            //	读取接收服务器的IP和端口 **********************************************************************************
+            //	Read the receiver server.IPand Port **********************************************************************************
             pkt.Reset();
             pkt.functionID = 0x92;
             ret = pkt.run(strPCAddr);
@@ -298,15 +298,15 @@ namespace WGController32_CSharp
             this.txtf_mask.Text = strMask;
             this.txtf_gateway.Text = strGateway;
 
-            if (this.txtf_IP.Text == "255.255.255.255")  //当系统为FF时, 改为默认值
+            if (this.txtf_IP.Text == "255.255.255.255")  //When the system isFFTime, Change to Default
             {
                 this.txtf_IP.Text = "192.168.0.0";
             }
-            if (this.txtf_mask.Text == "255.255.255.255")  //当系统为FF时, 改为默认值
+            if (this.txtf_mask.Text == "255.255.255.255")  //When the system isFFTime, Change to Default
             {
                 this.txtf_mask.Text = "255.255.255.0";
             }
-            if (this.txtf_gateway.Text == "255.255.255.255")  //当系统为FF时, 改为默认值
+            if (this.txtf_gateway.Text == "255.255.255.255")  //When the system isFFTime, Change to Default
             {
                 this.txtf_gateway.Text = "";
             }
@@ -315,7 +315,7 @@ namespace WGController32_CSharp
                 this.txtf_gateway.Text = "";
             }
 
-            //获取控制器的其他信息
+            //Get additional information about the controller
             getdeviceNetInfo();
         }
 

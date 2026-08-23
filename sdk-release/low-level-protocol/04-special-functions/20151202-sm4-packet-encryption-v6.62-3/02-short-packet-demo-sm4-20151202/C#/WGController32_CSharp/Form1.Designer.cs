@@ -43,7 +43,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(266, 40);
             this.button1.TabIndex = 0;
-            this.button1.Text = "1. Test Encrypt Function\r\n (SM4 ECB 加密通信)\r\n";
+            this.button1.Text = "1. Test Encrypt Function\r\n (SM4 ECB Encrypted communications)\r\n";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -98,7 +98,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(266, 40);
             this.button3.TabIndex = 9;
-            this.button3.Text = "3. Test Encrypt Function\r\n (SM4 CBC 加密通信)\r\n";
+            this.button3.Text = "3. Test Encrypt Function\r\n (SM4 CBC Encrypted communications)\r\n";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 

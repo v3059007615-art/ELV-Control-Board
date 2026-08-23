@@ -2,7 +2,7 @@
 Partial Class Form1
     Inherits System.Windows.Forms.Form
 
-    'Form 重写 Dispose，以清理组件列表。
+    'Form Rewrite Dispose，To clear the list of components。
     <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
@@ -14,12 +14,12 @@ Partial Class Form1
         End Try
     End Sub
 
-    'Windows 窗体设计器所必需的
+    'Windows Form designer required
     Private components As System.ComponentModel.IContainer
 
-    '注意: 以下过程是 Windows 窗体设计器所必需的
-    '可以使用 Windows 窗体设计器修改它。
-    '不要使用代码编辑器修改它。
+    'Attention.: The following process Windows Form designer required
+    'Available Windows The form designer modified it.。
+    'Do not modify it with the code editor。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.txtIP = New System.Windows.Forms.TextBox()
@@ -82,7 +82,7 @@ Partial Class Form1
         Me.button1.Name = "button1"
         Me.button1.Size = New System.Drawing.Size(222, 23)
         Me.button1.TabIndex = 0
-        Me.button1.Text = "1. Test Encrypt Function(加密通信)"
+        Me.button1.Text = "1. Test Encrypt Function(Encrypted communications)"
         Me.button1.UseVisualStyleBackColor = True
         '
         'button2
@@ -91,7 +91,7 @@ Partial Class Form1
         Me.button2.Name = "button2"
         Me.button2.Size = New System.Drawing.Size(470, 23)
         Me.button2.TabIndex = 15
-        Me.button2.Text = "2 1024-Bytes Command (1024字节指令实现 提取记录 上传权限 读取权限)"
+        Me.button2.Text = "2 1024-Bytes Command (1024Byte Command Achieved Ripping records Upload Permissions Read Permissions)"
         Me.button2.UseVisualStyleBackColor = True
         '
         'Form1

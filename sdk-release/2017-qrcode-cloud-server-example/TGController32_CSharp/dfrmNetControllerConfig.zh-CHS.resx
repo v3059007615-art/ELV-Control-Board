@@ -125,31 +125,31 @@
     <value>255, 27</value>
   </data>
   <data name="btnSearch.Text" xml:space="preserve">
-    <value>Search 搜索局域网设备</value>
+    <value>Search Search local area network devices</value>
   </data>
   <data name="btnConfigure.Text" xml:space="preserve">
-    <value>Configure 设置</value>
+    <value>Configure Settings</value>
   </data>
   <data name="btnExit.Text" xml:space="preserve">
-    <value>Exit 退出</value>
+    <value>Exit Exit</value>
   </data>
   <data name="f_ControllerSN.HeaderText" xml:space="preserve">
-    <value>控制器序列号SN</value>
+    <value>Control serial numberSN</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="f_ControllerSN.Width" type="System.Int32, mscorlib">
     <value>150</value>
   </data>
   <data name="f_Mask.HeaderText" xml:space="preserve">
-    <value>掩码Mask</value>
+    <value>MaskMask</value>
   </data>
   <data name="f_Gateway.HeaderText" xml:space="preserve">
-    <value>网关Gateway</value>
+    <value>GatewayGateway</value>
   </data>
   <data name="f_PCIPAddr.HeaderText" xml:space="preserve">
-    <value>电脑PC IP</value>
+    <value>ComputerPC IP</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Net Controller Config 搜索控制器</value>
+    <value>Net Controller Config Search controller</value>
   </data>
 </root>
